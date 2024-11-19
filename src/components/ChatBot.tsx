@@ -18,10 +18,17 @@ interface Message {
   content: string;
 }
 
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true
-});
+let openai: OpenAI | null = null;
+try {
+  if (import.meta.env.VITE_OPENAI_API_KEY) {
+    openai = new OpenAI({
+      apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+      dangerouslyAllowBrowser: true
+    });
+  }
+} catch (error) {
+  console.error('Error initializing OpenAI:', error);
+}
 
 const isRelevantTopic = (input: string): boolean => {
   const relevantKeywords = [
@@ -60,6 +67,19 @@ const ChatBot = () => {
     setInput("");
 
     try {
+      if (!openai) {
+        setMessages((prev) => [...prev, { 
+          role: "assistant", 
+          content: "I apologize, but I'm currently unable to process requests due to a configuration issue. Please try again later or contact support." 
+        }]);
+        toast({
+          title: "Configuration Error",
+          description: "The chatbot is not properly configured. Please ensure the API key is set.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       if (isRelevantTopic(input)) {
         const completion = await openai.chat.completions.create({
           messages: [
