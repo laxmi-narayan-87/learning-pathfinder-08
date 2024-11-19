@@ -29,6 +29,12 @@ const RoadmapCard = ({ roadmap }: { roadmap: Roadmap }) => {
         return "https://images.unsplash.com/photo-1460925895917-afdab827c52f";
       case "mobile development":
         return "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158";
+      case "artificial intelligence":
+        return "https://images.unsplash.com/photo-1485827404703-89b55fcc595e";
+      case "machine learning":
+        return "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7";
+      case "ui/ux design":
+        return "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d";
       default:
         return "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b";
     }
