@@ -2,7 +2,6 @@ import { useState } from "react";
 import Hero from "../components/Hero";
 import SearchBar from "../components/SearchBar";
 import RoadmapCard from "../components/RoadmapCard";
-import ChatBot from "../components/ChatBot";
 import { useRoadmaps } from "../hooks/useRoadmaps";
 import { Loader2 } from "lucide-react";
 
@@ -40,7 +39,6 @@ const Index = () => {
           )}
         </div>
       </main>
-      <ChatBot />
     </div>
   );
 };
