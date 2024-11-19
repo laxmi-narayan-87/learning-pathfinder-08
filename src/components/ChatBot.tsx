@@ -5,7 +5,8 @@ import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
 import { Loader2 } from "lucide-react";
 
-const hf = new HfInference();
+// Initialize with a read-only API token
+const hf = new HfInference("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");
 
 const ChatBot = () => {
   const [input, setInput] = useState("");
