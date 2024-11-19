@@ -8,8 +8,8 @@ const Hero = () => {
         <div className="mx-auto max-w-2xl lg:flex lg:items-center lg:gap-x-16">
           <div className="text-center lg:text-left">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              Your AI-Powered
-              <span className="text-primary block">Learning Journey</span>
+              SkillForge Academy
+              <span className="text-primary block">Your AI-Powered Learning Journey</span>
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600">
               Discover personalized learning roadmaps with real-time course recommendations from top platforms, tailored just for you.
