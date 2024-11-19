@@ -11,11 +11,34 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import OpenAI from "openai";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
+
+const openai = new OpenAI({
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true
+});
+
+const isRelevantTopic = (input: string): boolean => {
+  const relevantKeywords = [
+    "web", "website", "development", "programming",
+    "data", "analytics", "mobile", "app",
+    "ai", "machine learning", "coding", "software",
+    "frontend", "backend", "fullstack", "database",
+    "javascript", "python", "java", "react",
+    "angular", "vue", "node", "express",
+    "learning", "study", "course", "roadmap",
+    "career", "skill", "technology", "computer"
+  ];
+  
+  return relevantKeywords.some(keyword => 
+    input.toLowerCase().includes(keyword)
+  );
+};
 
 const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -36,23 +59,39 @@ const ChatBot = () => {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
 
-    // Simulate bot response based on keywords
-    setTimeout(() => {
-      let response = "I'm not sure about that. Could you be more specific about what you'd like to learn?";
-      
-      const lowercaseInput = input.toLowerCase();
-      if (lowercaseInput.includes("web") || lowercaseInput.includes("website")) {
-        response = "For web development, I recommend starting with our Web Development roadmap. It covers HTML, CSS, JavaScript, and modern frameworks like React.";
-      } else if (lowercaseInput.includes("data") || lowercaseInput.includes("analytics")) {
-        response = "Our Data Science roadmap would be perfect for you! It covers Python, statistics, machine learning, and data visualization.";
-      } else if (lowercaseInput.includes("mobile") || lowercaseInput.includes("app")) {
-        response = "Check out our Mobile Development roadmap to learn about iOS and Android development, including React Native and Flutter.";
-      } else if (lowercaseInput.includes("ai") || lowercaseInput.includes("machine learning")) {
-        response = "Our AI/Machine Learning roadmap covers Python, mathematics, neural networks, and practical ML applications.";
-      }
+    try {
+      if (isRelevantTopic(input)) {
+        const completion = await openai.chat.completions.create({
+          messages: [
+            { 
+              role: "system", 
+              content: "You are a helpful assistant focused on providing guidance about learning roadmaps for technology and programming skills. Keep responses concise and focused on educational paths and skill development." 
+            },
+            ...messages.map(msg => ({ 
+              role: msg.role as "user" | "assistant", 
+              content: msg.content 
+            })),
+            { role: "user", content: input }
+          ],
+          model: "gpt-4o",
+        });
 
-      setMessages((prev) => [...prev, { role: "assistant", content: response }]);
-    }, 1000);
+        const response = completion.choices[0]?.message?.content || "I apologize, but I couldn't generate a response. Please try again.";
+        setMessages((prev) => [...prev, { role: "assistant", content: response }]);
+      } else {
+        setMessages((prev) => [...prev, { 
+          role: "assistant", 
+          content: "I apologize, but this question appears to be outside my capabilities. I'm specifically trained to help with learning roadmaps and skill development in technology and programming. Could you please ask something related to these topics?" 
+        }]);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to get a response. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
