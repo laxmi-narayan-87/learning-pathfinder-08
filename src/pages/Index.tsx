@@ -4,6 +4,7 @@ import SearchBar from "../components/SearchBar";
 import RoadmapCard from "../components/RoadmapCard";
 import { useRoadmaps } from "../hooks/useRoadmaps";
 import { Loader2 } from "lucide-react";
+import ChatBot from "../components/ChatBot";
 
 const Index = () => {
   const { data: roadmaps, isLoading } = useRoadmaps();
@@ -39,6 +40,7 @@ const Index = () => {
           )}
         </div>
       </main>
+      <ChatBot />
     </div>
   );
 };
