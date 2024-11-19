@@ -5,7 +5,7 @@ import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
 import { Loader2 } from "lucide-react";
 
-const hf = new HfInference("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"); // This is a read-only token
+const hf = new HfInference();
 
 const ChatBot = () => {
   const [input, setInput] = useState("");
@@ -24,11 +24,13 @@ const ChatBot = () => {
 
     try {
       const response = await hf.textGeneration({
-        model: "OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5",
-        inputs: `You are a helpful learning assistant. Help the user with their question: ${userMessage}. Keep the response concise and focused on learning and technology topics.`,
+        model: "gpt2",
+        inputs: `Question: ${userMessage}\nAnswer:`,
         parameters: {
-          max_new_tokens: 250,
+          max_new_tokens: 150,
           temperature: 0.7,
+          top_p: 0.95,
+          repetition_penalty: 1.2,
         },
       });
 
