@@ -4,11 +4,9 @@ import type { Roadmap } from "../components/RoadmapCard";
 
 const fetchRoadmaps = async (): Promise<Roadmap[]> => {
   try {
-    // This would be your actual API endpoint that does the web scraping
     const response = await axios.get('https://api.yourbackend.com/roadmaps');
     return response.data;
   } catch (error) {
-    // Fallback to sample data if API is not available
     return [
       {
         id: "1",
@@ -30,6 +28,27 @@ const fetchRoadmaps = async (): Promise<Roadmap[]> => {
             rating: 4.9,
             url: "https://fullstackopen.com/",
           },
+          {
+            id: "c3",
+            title: "JavaScript: The Advanced Concepts",
+            platform: "Udemy",
+            rating: 4.8,
+            url: "https://www.udemy.com/course/advanced-javascript-concepts",
+          },
+          {
+            id: "c4",
+            title: "React - The Complete Guide",
+            platform: "Udemy",
+            rating: 4.7,
+            url: "https://www.udemy.com/course/react-the-complete-guide",
+          },
+          {
+            id: "c5",
+            title: "Node.js Developer Course",
+            platform: "Udemy",
+            rating: 4.8,
+            url: "https://www.udemy.com/course/the-complete-nodejs-developer-course",
+          },
         ],
       },
       {
@@ -39,18 +58,39 @@ const fetchRoadmaps = async (): Promise<Roadmap[]> => {
         icon: "/placeholder.svg",
         courses: [
           {
-            id: "c3",
+            id: "c6",
             title: "Data Science Specialization",
             platform: "Coursera",
             rating: 4.7,
             url: "https://www.coursera.org/specializations/data-science",
           },
           {
-            id: "c4",
+            id: "c7",
             title: "Machine Learning A-Z",
             platform: "Udemy",
             rating: 4.6,
             url: "https://www.udemy.com/course/machinelearning",
+          },
+          {
+            id: "c8",
+            title: "Python for Data Science and Machine Learning",
+            platform: "Udemy",
+            rating: 4.8,
+            url: "https://www.udemy.com/course/python-for-data-science-and-machine-learning-bootcamp",
+          },
+          {
+            id: "c9",
+            title: "Deep Learning Specialization",
+            platform: "Coursera",
+            rating: 4.9,
+            url: "https://www.coursera.org/specializations/deep-learning",
+          },
+          {
+            id: "c10",
+            title: "Statistics and Probability in Data Science",
+            platform: "edX",
+            rating: 4.7,
+            url: "https://www.edx.org/course/statistics-and-probability-in-data-science",
           },
         ],
       },
@@ -61,18 +101,39 @@ const fetchRoadmaps = async (): Promise<Roadmap[]> => {
         icon: "/placeholder.svg",
         courses: [
           {
-            id: "c5",
+            id: "c11",
             title: "iOS & Swift - The Complete iOS App Development Bootcamp",
             platform: "Udemy",
             rating: 4.8,
             url: "https://www.udemy.com/course/ios-13-app-development-bootcamp",
           },
           {
-            id: "c6",
+            id: "c12",
             title: "Android Development for Beginners",
             platform: "Google",
             rating: 4.7,
             url: "https://developer.android.com/courses",
+          },
+          {
+            id: "c13",
+            title: "React Native - The Practical Guide",
+            platform: "Udemy",
+            rating: 4.7,
+            url: "https://www.udemy.com/course/react-native-the-practical-guide",
+          },
+          {
+            id: "c14",
+            title: "Flutter & Dart - The Complete Guide",
+            platform: "Udemy",
+            rating: 4.8,
+            url: "https://www.udemy.com/course/flutter-dart-the-complete-guide",
+          },
+          {
+            id: "c15",
+            title: "SwiftUI Masterclass",
+            platform: "Udemy",
+            rating: 4.9,
+            url: "https://www.udemy.com/course/swiftui-masterclass",
           },
         ],
       },
