@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
-import { HfInference } from "@huggingface/inference";
+import OpenAI from "openai";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
 import { Loader2, MessageCircle, X } from "lucide-react";
 import Cookies from "js-cookie";
 
-// Initialize with environment variable or fallback to empty string
-const HF_API_TOKEN = import.meta.env.VITE_HUGGING_FACE_API_TOKEN || "";
-const hf = new HfInference(HF_API_TOKEN);
+// Initialize OpenAI with Fireworks API
+const FIREWORKS_API_KEY = import.meta.env.VITE_FIREWORKS_API_KEY || "";
+const openai = new OpenAI({
+  apiKey: FIREWORKS_API_KEY,
+  baseURL: "https://api.fireworks.ai/inference/v1",
+});
 
 const COOKIE_MESSAGES = "chat_messages";
 const COOKIE_CHAT_OPEN = "chat_open";
@@ -40,7 +43,7 @@ const ChatBot = () => {
 
   // Save state to cookies whenever it changes
   useEffect(() => {
-    Cookies.set(COOKIE_MESSAGES, JSON.stringify(messages), { expires: 7 }); // Expires in 7 days
+    Cookies.set(COOKIE_MESSAGES, JSON.stringify(messages), { expires: 7 });
   }, [messages]);
 
   useEffect(() => {
@@ -51,10 +54,10 @@ const ChatBot = () => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    if (!HF_API_TOKEN) {
+    if (!FIREWORKS_API_KEY) {
       toast({
         title: "Configuration Error",
-        description: "Hugging Face API token is not configured. Please set the VITE_HUGGING_FACE_API_TOKEN environment variable.",
+        description: "Fireworks API key is not configured. Please set the VITE_FIREWORKS_API_KEY environment variable.",
         variant: "destructive",
       });
       return;
@@ -66,26 +69,23 @@ const ChatBot = () => {
     setIsLoading(true);
 
     try {
-      console.log("Sending request to Hugging Face API...");
-      const response = await hf.textGeneration({
-        model: "google/flan-t5-small",
-        inputs: `User: ${userMessage}\nAssistant:`,
-        parameters: {
-          max_new_tokens: 100,
-          temperature: 0.7,
-          top_p: 0.95,
-          repetition_penalty: 1.2,
-        },
+      console.log("Sending request to Fireworks API...");
+      const response = await openai.chat.completions.create({
+        model: "accounts/fireworks/models/llama-v2-7b-chat",
+        messages: [{ role: "user", content: userMessage }],
+        max_tokens: 150,
+        temperature: 0.7,
       });
-      console.log("Received response:", response);
 
-      setMessages((prev) => [...prev, { role: "bot", content: response.generated_text }]);
+      console.log("Received response:", response);
+      const botMessage = response.choices[0]?.message?.content || "Sorry, I couldn't generate a response.";
+      setMessages((prev) => [...prev, { role: "bot", content: botMessage }]);
     } catch (error: any) {
       console.error("Error generating response:", error);
       
       let errorMessage = "Failed to generate response. Please try again.";
-      if (error.message?.includes("Authorization header") || error.status === 400) {
-        errorMessage = "Invalid API token. Please check your Hugging Face API configuration.";
+      if (error.message?.includes("auth")) {
+        errorMessage = "Invalid API key. Please check your Fireworks API configuration.";
       }
 
       toast({
