@@ -6,7 +6,7 @@ import { useToast } from "./ui/use-toast";
 import { Loader2 } from "lucide-react";
 
 // Initialize with a read-only API token
-const hf = new HfInference("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");
+const hf = new HfInference("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");
 
 const ChatBot = () => {
   const [input, setInput] = useState("");
@@ -25,7 +25,7 @@ const ChatBot = () => {
 
     try {
       const response = await hf.textGeneration({
-        model: "facebook/opt-125m",
+        model: "google/flan-t5-small",
         inputs: `User: ${userMessage}\nAssistant:`,
         parameters: {
           max_new_tokens: 100,
