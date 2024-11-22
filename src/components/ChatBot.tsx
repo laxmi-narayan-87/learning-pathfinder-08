@@ -6,8 +6,9 @@ import { useToast } from "./ui/use-toast";
 import { Loader2, MessageCircle, X } from "lucide-react";
 import Cookies from "js-cookie";
 
-// Initialize with a read-only API token
-const hf = new HfInference("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");
+// Initialize with environment variable or fallback to empty string
+const HF_API_TOKEN = import.meta.env.VITE_HUGGING_FACE_API_TOKEN || "";
+const hf = new HfInference(HF_API_TOKEN);
 
 const COOKIE_MESSAGES = "chat_messages";
 const COOKIE_CHAT_OPEN = "chat_open";
@@ -50,12 +51,22 @@ const ChatBot = () => {
     e.preventDefault();
     if (!input.trim()) return;
 
+    if (!HF_API_TOKEN) {
+      toast({
+        title: "Configuration Error",
+        description: "Hugging Face API token is not configured. Please set the VITE_HUGGING_FACE_API_TOKEN environment variable.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const userMessage = input.trim();
     setInput("");
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
     setIsLoading(true);
 
     try {
+      console.log("Sending request to Hugging Face API...");
       const response = await hf.textGeneration({
         model: "google/flan-t5-small",
         inputs: `User: ${userMessage}\nAssistant:`,
@@ -66,13 +77,20 @@ const ChatBot = () => {
           repetition_penalty: 1.2,
         },
       });
+      console.log("Received response:", response);
 
       setMessages((prev) => [...prev, { role: "bot", content: response.generated_text }]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating response:", error);
+      
+      let errorMessage = "Failed to generate response. Please try again.";
+      if (error.message?.includes("Authorization header") || error.status === 400) {
+        errorMessage = "Invalid API token. Please check your Hugging Face API configuration.";
+      }
+
       toast({
         title: "Error",
-        description: "Failed to generate response. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
