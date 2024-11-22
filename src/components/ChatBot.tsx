@@ -4,27 +4,44 @@ import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
 import { Loader2, MessageCircle, X } from "lucide-react";
 import Cookies from "js-cookie";
+import { useRoadmaps } from "../hooks/useRoadmaps";
 
 const COOKIE_MESSAGES = "chat_messages";
 const COOKIE_CHAT_OPEN = "chat_open";
 
-const generateResponse = (question: string): string => {
-  // Simple response logic - this could be expanded based on needs
+const generateResponse = (question: string, roadmaps: any[]): string => {
+  console.log("Generating response for:", question);
   const questionLower = question.toLowerCase();
   
+  // Check if the question is about roadmaps
+  if (questionLower.includes("roadmap") || questionLower.includes("learn")) {
+    // Extract the subject from the question
+    const subjects = roadmaps.map(r => r.title.toLowerCase());
+    const matchedSubject = subjects.find(subject => questionLower.includes(subject));
+    
+    if (matchedSubject) {
+      const roadmap = roadmaps.find(r => r.title.toLowerCase() === matchedSubject);
+      if (roadmap) {
+        const coursesList = roadmap.courses
+          .slice(0, 3)
+          .map(course => `\n- ${course.title} (${course.platform}, Rating: ${course.rating})`)
+          .join("");
+        
+        return `Here's a roadmap for ${roadmap.title}:\n${roadmap.description}\n\nTop recommended courses:${coursesList}\n\nWould you like more specific information about any of these courses?`;
+      }
+    }
+  }
+  
+  // Default responses for other types of questions
   if (questionLower.includes("hello") || questionLower.includes("hi")) {
-    return "Hello! How can I help you today?";
+    return "Hello! I can help you find learning roadmaps and courses. What subject are you interested in?";
   }
   
-  if (questionLower.includes("how are you")) {
-    return "I'm doing well, thank you! How can I assist you?";
+  if (questionLower.includes("thank")) {
+    return "You're welcome! Let me know if you need any other information about courses or learning paths.";
   }
   
-  if (questionLower.includes("bye") || questionLower.includes("goodbye")) {
-    return "Goodbye! Have a great day!";
-  }
-  
-  return "I'll do my best to help you with that. Could you please provide more details about your question?";
+  return "I can help you find learning roadmaps and courses. Try asking about specific subjects like 'data science roadmap' or 'web development courses'.";
 };
 
 const ChatBot = () => {
@@ -33,6 +50,7 @@ const ChatBot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
+  const { data: roadmaps } = useRoadmaps();
 
   useEffect(() => {
     const savedMessages = Cookies.get(COOKIE_MESSAGES);
@@ -69,11 +87,11 @@ const ChatBot = () => {
     setIsLoading(true);
 
     try {
-      console.log("Generating response for:", userMessage);
+      console.log("Processing user message:", userMessage);
       // Simulate API delay for more natural interaction
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      const response = generateResponse(userMessage);
+      const response = generateResponse(userMessage, roadmaps || []);
       console.log("Generated response:", response);
       
       setMessages((prev) => [...prev, { role: "bot", content: response }]);
