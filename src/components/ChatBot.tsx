@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HfInference } from "@huggingface/inference";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
 import { Loader2, MessageCircle, X } from "lucide-react";
+import Cookies from "js-cookie";
 
 // Initialize with a read-only API token
 const hf = new HfInference("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");
+
+const COOKIE_MESSAGES = "chat_messages";
+const COOKIE_CHAT_OPEN = "chat_open";
 
 const ChatBot = () => {
   const [input, setInput] = useState("");
@@ -14,6 +18,33 @@ const ChatBot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
+
+  // Load saved state from cookies on component mount
+  useEffect(() => {
+    const savedMessages = Cookies.get(COOKIE_MESSAGES);
+    const savedChatOpen = Cookies.get(COOKIE_CHAT_OPEN);
+    
+    if (savedMessages) {
+      try {
+        setMessages(JSON.parse(savedMessages));
+      } catch (e) {
+        console.error("Error parsing saved messages:", e);
+      }
+    }
+    
+    if (savedChatOpen) {
+      setIsOpen(savedChatOpen === "true");
+    }
+  }, []);
+
+  // Save state to cookies whenever it changes
+  useEffect(() => {
+    Cookies.set(COOKIE_MESSAGES, JSON.stringify(messages), { expires: 7 }); // Expires in 7 days
+  }, [messages]);
+
+  useEffect(() => {
+    Cookies.set(COOKIE_CHAT_OPEN, String(isOpen), { expires: 7 });
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
