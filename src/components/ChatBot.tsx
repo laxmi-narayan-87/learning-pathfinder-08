@@ -8,32 +8,23 @@ import Cookies from "js-cookie";
 const COOKIE_MESSAGES = "chat_messages";
 const COOKIE_CHAT_OPEN = "chat_open";
 
-const LEARNING_TIPS = {
-  study: [
-    "Break down complex topics into smaller, manageable chunks for better understanding.",
-    "Use the Pomodoro Technique: study for 25 minutes, then take a 5-minute break.",
-    "Review your notes within 24 hours of learning new material."
-  ],
-  focus: [
-    "Find a quiet study space with minimal distractions.",
-    "Take regular breaks to maintain focus and productivity.",
-    "Use noise-canceling headphones or background white noise if needed."
-  ],
-  memory: [
-    "Create flashcards for key concepts and review them regularly.",
-    "Practice active recall by testing yourself on what you've learned.",
-    "Connect new information to things you already know."
-  ],
-  motivation: [
-    "Set specific, measurable learning goals for each study session.",
-    "Reward yourself after completing study milestones.",
-    "Join study groups or find a study buddy for collaborative learning."
-  ],
-  understanding: [
-    "Create mind maps to visualize connections between different concepts.",
-    "Teach what you've learned to others to reinforce your understanding.",
-    "Write summaries of what you've learned in your own words."
-  ]
+const generateResponse = (question: string): string => {
+  // Simple response logic - this could be expanded based on needs
+  const questionLower = question.toLowerCase();
+  
+  if (questionLower.includes("hello") || questionLower.includes("hi")) {
+    return "Hello! How can I help you today?";
+  }
+  
+  if (questionLower.includes("how are you")) {
+    return "I'm doing well, thank you! How can I assist you?";
+  }
+  
+  if (questionLower.includes("bye") || questionLower.includes("goodbye")) {
+    return "Goodbye! Have a great day!";
+  }
+  
+  return "I'll do my best to help you with that. Could you please provide more details about your question?";
 };
 
 const ChatBot = () => {
@@ -43,7 +34,6 @@ const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  // Load saved state from cookies on component mount
   useEffect(() => {
     const savedMessages = Cookies.get(COOKIE_MESSAGES);
     const savedChatOpen = Cookies.get(COOKIE_CHAT_OPEN);
@@ -61,7 +51,6 @@ const ChatBot = () => {
     }
   }, []);
 
-  // Save state to cookies whenever it changes
   useEffect(() => {
     Cookies.set(COOKIE_MESSAGES, JSON.stringify(messages), { expires: 7 });
   }, [messages]);
@@ -69,27 +58,6 @@ const ChatBot = () => {
   useEffect(() => {
     Cookies.set(COOKIE_CHAT_OPEN, String(isOpen), { expires: 7 });
   }, [isOpen]);
-
-  const findRelevantTip = (question: string) => {
-    console.log("Finding relevant tip for question:", question);
-    
-    const questionLower = question.toLowerCase();
-    let category = "understanding"; // default category
-    
-    if (questionLower.includes("study") || questionLower.includes("learn")) {
-      category = "study";
-    } else if (questionLower.includes("focus") || questionLower.includes("concentrate")) {
-      category = "focus";
-    } else if (questionLower.includes("remember") || questionLower.includes("memory")) {
-      category = "memory";
-    } else if (questionLower.includes("motivat") || questionLower.includes("inspire")) {
-      category = "motivation";
-    }
-    
-    console.log("Selected category:", category);
-    const categoryTips = LEARNING_TIPS[category];
-    return categoryTips[Math.floor(Math.random() * categoryTips.length)];
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,16 +69,16 @@ const ChatBot = () => {
     setIsLoading(true);
 
     try {
-      console.log("Generating learning advice...");
+      console.log("Generating response for:", userMessage);
       // Simulate API delay for more natural interaction
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      const relevantTip = findRelevantTip(userMessage);
-      console.log("Selected learning tip:", relevantTip);
+      const response = generateResponse(userMessage);
+      console.log("Generated response:", response);
       
-      setMessages((prev) => [...prev, { role: "bot", content: relevantTip }]);
+      setMessages((prev) => [...prev, { role: "bot", content: response }]);
     } catch (error) {
-      console.error("Error generating learning advice:", error);
+      console.error("Error generating response:", error);
       
       toast({
         title: "Error",
@@ -124,7 +92,6 @@ const ChatBot = () => {
 
   return (
     <>
-      {/* Toggle Button */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-4 right-4 rounded-full p-4 shadow-lg"
@@ -137,11 +104,10 @@ const ChatBot = () => {
         )}
       </Button>
 
-      {/* Chat Window */}
       {isOpen && (
         <div className="fixed bottom-20 right-4 w-96 bg-white rounded-lg shadow-xl border border-gray-200">
           <div className="p-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold">Learning Assistant</h3>
+            <h3 className="text-lg font-semibold">Chat Assistant</h3>
           </div>
           
           <div className="h-96 overflow-y-auto p-4 space-y-4">
@@ -173,7 +139,7 @@ const ChatBot = () => {
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about learning strategies..."
+                placeholder="Ask me anything..."
                 className="resize-none"
                 rows={2}
               />
