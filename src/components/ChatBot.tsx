@@ -1,17 +1,9 @@
 import { useState, useEffect } from "react";
-import OpenAI from "openai";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
 import { Loader2, MessageCircle, X } from "lucide-react";
 import Cookies from "js-cookie";
-
-// Initialize OpenAI with Fireworks API
-const FIREWORKS_API_KEY = import.meta.env.VITE_FIREWORKS_API_KEY || "";
-const openai = new OpenAI({
-  apiKey: FIREWORKS_API_KEY,
-  baseURL: "https://api.fireworks.ai/inference/v1",
-});
 
 const COOKIE_MESSAGES = "chat_messages";
 const COOKIE_CHAT_OPEN = "chat_open";
@@ -54,43 +46,25 @@ const ChatBot = () => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    if (!FIREWORKS_API_KEY) {
-      toast({
-        title: "Configuration Error",
-        description: "Fireworks API key is not configured. Please set the VITE_FIREWORKS_API_KEY environment variable.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     const userMessage = input.trim();
     setInput("");
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
     setIsLoading(true);
 
     try {
-      console.log("Sending request to Fireworks API...");
-      const response = await openai.chat.completions.create({
-        model: "accounts/fireworks/models/llama-v2-7b-chat",
-        messages: [{ role: "user", content: userMessage }],
-        max_tokens: 150,
-        temperature: 0.7,
-      });
-
-      console.log("Received response:", response);
-      const botMessage = response.choices[0]?.message?.content || "Sorry, I couldn't generate a response.";
-      setMessages((prev) => [...prev, { role: "bot", content: botMessage }]);
-    } catch (error: any) {
-      console.error("Error generating response:", error);
+      console.log("Fetching advice from API...");
+      const response = await fetch("https://api.adviceslip.com/advice");
+      const data = await response.json();
       
-      let errorMessage = "Failed to generate response. Please try again.";
-      if (error.message?.includes("auth")) {
-        errorMessage = "Invalid API key. Please check your Fireworks API configuration.";
-      }
-
+      console.log("Received response:", data);
+      const botMessage = data.slip.advice;
+      setMessages((prev) => [...prev, { role: "bot", content: botMessage }]);
+    } catch (error) {
+      console.error("Error fetching advice:", error);
+      
       toast({
         title: "Error",
-        description: errorMessage,
+        description: "Failed to get a response. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -117,7 +91,7 @@ const ChatBot = () => {
       {isOpen && (
         <div className="fixed bottom-20 right-4 w-96 bg-white rounded-lg shadow-xl border border-gray-200">
           <div className="p-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold">Learning Assistant</h3>
+            <h3 className="text-lg font-semibold">Advice Assistant</h3>
           </div>
           
           <div className="h-96 overflow-y-auto p-4 space-y-4">
@@ -149,7 +123,7 @@ const ChatBot = () => {
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask a question..."
+                placeholder="Ask for advice..."
                 className="resize-none"
                 rows={2}
               />
