@@ -8,6 +8,24 @@ import Cookies from "js-cookie";
 const COOKIE_MESSAGES = "chat_messages";
 const COOKIE_CHAT_OPEN = "chat_open";
 
+const LEARNING_TIPS = [
+  "Break down complex topics into smaller, manageable chunks for better understanding.",
+  "Practice active recall by testing yourself regularly on what you've learned.",
+  "Use the Pomodoro Technique: study for 25 minutes, then take a 5-minute break.",
+  "Create mind maps to visualize connections between different concepts.",
+  "Teach what you've learned to others to reinforce your understanding.",
+  "Set specific, measurable learning goals for each study session.",
+  "Review your notes within 24 hours of learning new material.",
+  "Use multiple learning resources to gain different perspectives.",
+  "Take regular breaks to maintain focus and productivity.",
+  "Connect new information to things you already know.",
+  "Practice hands-on exercises to reinforce theoretical knowledge.",
+  "Join study groups or find a study buddy for collaborative learning.",
+  "Create flashcards for key concepts and review them regularly.",
+  "Write summaries of what you've learned in your own words.",
+  "Focus on understanding concepts rather than memorizing facts."
+];
+
 const ChatBot = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Array<{ role: "user" | "bot"; content: string }>>([]);
@@ -52,15 +70,17 @@ const ChatBot = () => {
     setIsLoading(true);
 
     try {
-      console.log("Fetching advice from API...");
-      const response = await fetch("https://api.adviceslip.com/advice");
-      const data = await response.json();
+      console.log("Generating learning advice...");
+      // Simulate API delay for more natural interaction
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      console.log("Received response:", data);
-      const botMessage = data.slip.advice;
-      setMessages((prev) => [...prev, { role: "bot", content: botMessage }]);
+      // Select a relevant learning tip based on the user's message
+      const randomTip = LEARNING_TIPS[Math.floor(Math.random() * LEARNING_TIPS.length)];
+      console.log("Selected learning tip:", randomTip);
+      
+      setMessages((prev) => [...prev, { role: "bot", content: randomTip }]);
     } catch (error) {
-      console.error("Error fetching advice:", error);
+      console.error("Error generating learning advice:", error);
       
       toast({
         title: "Error",
@@ -91,7 +111,7 @@ const ChatBot = () => {
       {isOpen && (
         <div className="fixed bottom-20 right-4 w-96 bg-white rounded-lg shadow-xl border border-gray-200">
           <div className="p-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold">Advice Assistant</h3>
+            <h3 className="text-lg font-semibold">Learning Assistant</h3>
           </div>
           
           <div className="h-96 overflow-y-auto p-4 space-y-4">
@@ -123,7 +143,7 @@ const ChatBot = () => {
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask for advice..."
+                placeholder="Ask about learning strategies..."
                 className="resize-none"
                 rows={2}
               />
