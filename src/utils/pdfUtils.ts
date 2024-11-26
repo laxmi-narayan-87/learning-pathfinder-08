@@ -1,4 +1,7 @@
-import PDFParser from 'pdf-parse';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Initialize pdf.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 export interface QAEntry {
   question: string;
@@ -8,12 +11,24 @@ export interface QAEntry {
 export const extractQAFromPDF = async (pdfBuffer: ArrayBuffer): Promise<QAEntry[]> => {
   try {
     console.log("Starting PDF extraction");
-    const data = await PDFParser(pdfBuffer);
-    const text = data.text;
+    
+    // Load the PDF document
+    const loadingTask = pdfjsLib.getDocument({ data: pdfBuffer });
+    const pdf = await loadingTask.promise;
+    
+    let fullText = '';
+    
+    // Extract text from all pages
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items.map((item: any) => item.str).join(' ');
+      fullText += pageText + '\n';
+    }
     
     // Split text into Q&A pairs (assuming format "Q: ... A: ...")
     const qaRegex = /Q:\s*(.*?)\s*A:\s*(.*?)(?=(?:\n\s*Q:|$))/gs;
-    const matches = [...text.matchAll(qaRegex)];
+    const matches = [...fullText.matchAll(qaRegex)];
     
     console.log(`Found ${matches.length} Q&A pairs in PDF`);
     
