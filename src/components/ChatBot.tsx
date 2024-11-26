@@ -1,23 +1,54 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
-import { Loader2, MessageCircle, X, Upload } from "lucide-react";
+import { Loader2, MessageCircle, X } from "lucide-react";
 import Cookies from "js-cookie";
 import { useRoadmaps } from "../hooks/useRoadmaps";
-import { extractQAFromPDF, type QAEntry } from "../utils/pdfUtils";
-import { findBestMatch } from "../utils/pdfUtils";
 
 const COOKIE_MESSAGES = "chat_messages";
 const COOKIE_CHAT_OPEN = "chat_open";
+
+const generateResponse = (question: string, roadmaps: any[]): string => {
+  console.log("Generating response for:", question);
+  const questionLower = question.toLowerCase();
+  
+  // Check if the question is about roadmaps
+  if (questionLower.includes("roadmap") || questionLower.includes("learn")) {
+    // Extract the subject from the question
+    const subjects = roadmaps.map(r => r.title.toLowerCase());
+    const matchedSubject = subjects.find(subject => questionLower.includes(subject));
+    
+    if (matchedSubject) {
+      const roadmap = roadmaps.find(r => r.title.toLowerCase() === matchedSubject);
+      if (roadmap) {
+        const coursesList = roadmap.courses
+          .slice(0, 3)
+          .map(course => `\n- ${course.title} (${course.platform}, Rating: ${course.rating})`)
+          .join("");
+        
+        return `Here's a roadmap for ${roadmap.title}:\n${roadmap.description}\n\nTop recommended courses:${coursesList}\n\nWould you like more specific information about any of these courses?`;
+      }
+    }
+  }
+  
+  // Default responses for other types of questions
+  if (questionLower.includes("hello") || questionLower.includes("hi")) {
+    return "Hello! I can help you find learning roadmaps and courses. What subject are you interested in?";
+  }
+  
+  if (questionLower.includes("thank")) {
+    return "You're welcome! Let me know if you need any other information about courses or learning paths.";
+  }
+  
+  return "I can help you find learning roadmaps and courses. Try asking about specific subjects like 'data science roadmap' or 'web development courses'.";
+};
 
 const ChatBot = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Array<{ role: "user" | "bot"; content: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [qaKnowledgeBase, setQaKnowledgeBase] = useState<QAEntry[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { data: roadmaps } = useRoadmaps();
 
@@ -46,37 +77,6 @@ const ChatBot = () => {
     Cookies.set(COOKIE_CHAT_OPEN, String(isOpen), { expires: 7 });
   }, [isOpen]);
 
-  const handlePDFUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setIsLoading(true);
-    try {
-      const buffer = await file.arrayBuffer();
-      const qaList = await extractQAFromPDF(buffer);
-      setQaKnowledgeBase(qaList);
-      
-      toast({
-        title: "PDF Uploaded Successfully",
-        description: `Loaded ${qaList.length} Q&A pairs from the PDF.`,
-      });
-      
-      setMessages(prev => [...prev, {
-        role: "bot",
-        content: "I've loaded the new knowledge base. How can I help you?"
-      }]);
-    } catch (error) {
-      console.error("Error processing PDF:", error);
-      toast({
-        title: "Error",
-        description: "Failed to process the PDF file. Please make sure it's in the correct format.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -87,16 +87,12 @@ const ChatBot = () => {
     setIsLoading(true);
 
     try {
-      let response: string;
+      console.log("Processing user message:", userMessage);
+      // Simulate API delay for more natural interaction
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      // First check if we have a knowledge base to use
-      if (qaKnowledgeBase.length > 0) {
-        response = findBestMatch(userMessage, qaKnowledgeBase);
-      } else {
-        // Fallback to original roadmap-based responses
-        console.log("No knowledge base found, using default response generation");
-        response = "Please upload a PDF with Q&A content first, or ask about our learning roadmaps.";
-      }
+      const response = generateResponse(userMessage, roadmaps || []);
+      console.log("Generated response:", response);
       
       setMessages((prev) => [...prev, { role: "bot", content: response }]);
     } catch (error) {
@@ -128,24 +124,8 @@ const ChatBot = () => {
 
       {isOpen && (
         <div className="fixed bottom-20 right-4 w-96 bg-white rounded-lg shadow-xl border border-gray-200">
-          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+          <div className="p-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold">Chat Assistant</h3>
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              variant="outline"
-              size="sm"
-              disabled={isLoading}
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              Upload PDF
-            </Button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              accept=".pdf"
-              onChange={handlePDFUpload}
-            />
           </div>
           
           <div className="h-96 overflow-y-auto p-4 space-y-4">
