@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@googleapis/customsearch": "^3.2.0",
     "@hookform/resolvers": "^3.9.0",
     "@huggingface/inference": "^2.6.4",
     "@radix-ui/react-accordion": "^1.2.0",

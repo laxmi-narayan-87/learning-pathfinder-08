@@ -9,13 +9,26 @@ import { useRoadmaps } from "../hooks/useRoadmaps";
 const COOKIE_MESSAGES = "chat_messages";
 const COOKIE_CHAT_OPEN = "chat_open";
 
-const generateResponse = (question: string, roadmaps: any[]): string => {
+// Function to check if query is related to learning/education
+const isEducationRelated = (query: string): boolean => {
+  const educationKeywords = [
+    'learn', 'course', 'study', 'education', 'training',
+    'roadmap', 'skill', 'tutorial', 'certificate', 'degree',
+    'programming', 'development', 'data', 'science', 'AI',
+    'machine learning', 'web', 'software'
+  ];
+  
+  return educationKeywords.some(keyword => 
+    query.toLowerCase().includes(keyword.toLowerCase())
+  );
+};
+
+const generateResponse = async (question: string, roadmaps: any[]): Promise<string> => {
   console.log("Generating response for:", question);
   const questionLower = question.toLowerCase();
-  
-  // Check if the question is about roadmaps
+
+  // First check if it's about roadmaps
   if (questionLower.includes("roadmap") || questionLower.includes("learn")) {
-    // Extract the subject from the question
     const subjects = roadmaps.map(r => r.title.toLowerCase());
     const matchedSubject = subjects.find(subject => questionLower.includes(subject));
     
@@ -31,8 +44,23 @@ const generateResponse = (question: string, roadmaps: any[]): string => {
       }
     }
   }
-  
-  // Default responses for other types of questions
+
+  // If not about roadmaps and education-related, use Google Search
+  if (isEducationRelated(question)) {
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(question + " learning education courses")}`);
+      const data = await response.json();
+      
+      if (data.items && data.items.length > 0) {
+        const topResult = data.items[0];
+        return `Based on search results: ${topResult.snippet}\n\nYou can learn more here: ${topResult.link}\n\nWould you like to know about specific courses or learning paths?`;
+      }
+    } catch (error) {
+      console.error("Google search error:", error);
+    }
+  }
+
+  // Default responses
   if (questionLower.includes("hello") || questionLower.includes("hi")) {
     return "Hello! I can help you find learning roadmaps and courses. What subject are you interested in?";
   }
@@ -88,10 +116,7 @@ const ChatBot = () => {
 
     try {
       console.log("Processing user message:", userMessage);
-      // Simulate API delay for more natural interaction
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const response = generateResponse(userMessage, roadmaps || []);
+      const response = await generateResponse(userMessage, roadmaps || []);
       console.log("Generated response:", response);
       
       setMessages((prev) => [...prev, { role: "bot", content: response }]);
