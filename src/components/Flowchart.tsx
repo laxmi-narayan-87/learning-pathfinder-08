@@ -27,14 +27,15 @@ interface TreemapContentProps {
   colors: any;
   rank: any;
   name: string;
-  category?: "topic" | "course";
+  category?: "topic" | "course" | "stage";
 }
 
 export const Flowchart = ({ sections }: FlowchartProps) => {
-  // Transform sections data for the treemap
-  const data = sections.map((section) => ({
-    name: section.title,
-    size: section.topics.length,
+  // Transform sections data for the treemap with stages
+  const data = sections.map((section, index) => ({
+    name: `Stage ${index + 1}: ${section.title}`,
+    size: section.topics.length + 3, // Add extra size for courses
+    category: "stage" as const,
     children: [
       ...section.topics.map((topic) => ({
         name: topic,
@@ -42,27 +43,29 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
         category: "topic" as const
       })),
       {
-        name: "Recommended Courses",
+        name: "Recommended Resources",
         size: 3,
         children: [
-          { name: "Udemy Course", size: 1, category: "course" as const },
-          { name: "Coursera Course", size: 1, category: "course" as const },
-          { name: "edX Course", size: 1, category: "course" as const }
+          { name: "Interactive Courses", size: 1, category: "course" as const },
+          { name: "Documentation", size: 1, category: "course" as const },
+          { name: "Practice Projects", size: 1, category: "course" as const }
         ]
       }
     ]
   }));
 
   const COLORS = {
-    topic: "#4f46e5",
-    course: "#7c3aed",
+    stage: "#2563eb", // Primary blue for stages
+    topic: "#4f46e5", // Indigo for topics
+    course: "#7c3aed", // Purple for courses
     default: "#2563eb"
   };
 
   const renderContent = (props: TreemapContentProps): ReactElement => {
     const { x, y, width, height, name, category } = props;
+    const isStage = category === "stage";
     const isCourse = category === "course";
-    const color = isCourse ? COLORS.course : COLORS.topic;
+    const color = isStage ? COLORS.stage : isCourse ? COLORS.course : COLORS.topic;
 
     return (
       <g>
@@ -73,6 +76,8 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
           height={height}
           fill={color}
           stroke="#fff"
+          strokeWidth={isStage ? 2 : 1}
+          rx={isStage ? 6 : 3}
         />
         {width > 50 && height > 30 && (
           <text
@@ -80,7 +85,8 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
             y={y + height / 2}
             textAnchor="middle"
             fill="#fff"
-            fontSize={12}
+            fontSize={isStage ? 14 : 12}
+            fontWeight={isStage ? "bold" : "normal"}
             className="select-none"
           >
             {name}
@@ -91,7 +97,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
   };
 
   return (
-    <div className="w-full h-[600px] overflow-auto">
+    <div className="w-full h-[600px] overflow-auto bg-white rounded-lg shadow-lg p-4">
       <ChartContainer
         config={{
           colors: {
@@ -104,7 +110,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
       >
         <ResponsiveContainer width="100%" height="100%">
           <Treemap
-            data={[{ name: "Learning Path", children: data }]}
+            data={[{ name: "Career Path", children: data }]}
             dataKey="size"
             stroke="#fff"
             fill="#4f46e5"
@@ -113,9 +119,15 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
             <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
+                  const data = payload[0].payload;
                   return (
-                    <div className="bg-white p-2 rounded shadow">
-                      <p className="text-sm">{payload[0].payload.name}</p>
+                    <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
+                      <p className="font-semibold">{data.name}</p>
+                      {data.category && (
+                        <p className="text-sm text-gray-600 capitalize mt-1">
+                          {data.category}
+                        </p>
+                      )}
                     </div>
                   );
                 }
