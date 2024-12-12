@@ -2,9 +2,7 @@ import { ChartContainer } from "@/components/ui/chart";
 import {
   Treemap,
   ResponsiveContainer,
-  Tooltip,
-  Tree,
-  TreeProps
+  Tooltip
 } from "recharts";
 
 interface Section {
@@ -17,28 +15,32 @@ interface FlowchartProps {
 }
 
 export const Flowchart = ({ sections }: FlowchartProps) => {
-  // Transform sections data for the tree
-  const data = {
-    name: "Learning Path",
-    children: sections.map((section) => ({
-      name: section.title,
-      children: [
-        {
-          name: "Topics",
-          children: section.topics.map((topic) => ({
-            name: topic,
-          })),
-        },
-        {
-          name: "Recommended Courses",
-          children: [
-            { name: "Udemy Course" },
-            { name: "Coursera Course" },
-            { name: "edX Course" },
-          ],
-        },
-      ],
-    })),
+  // Transform sections data for the treemap
+  const data = sections.map((section) => ({
+    name: section.title,
+    size: section.topics.length,
+    children: [
+      ...section.topics.map((topic) => ({
+        name: topic,
+        size: 1,
+        category: "topic"
+      })),
+      {
+        name: "Recommended Courses",
+        size: 3,
+        children: [
+          { name: "Udemy Course", size: 1, category: "course" },
+          { name: "Coursera Course", size: 1, category: "course" },
+          { name: "edX Course", size: 1, category: "course" }
+        ]
+      }
+    ]
+  }));
+
+  const COLORS = {
+    topic: "#4f46e5",
+    course: "#7c3aed",
+    default: "#2563eb"
   };
 
   return (
@@ -47,20 +49,48 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
         config={{
           colors: {
             theme: {
-              background: "transparent",
+              light: COLORS.default,
+              dark: COLORS.topic
             },
           },
         }}
       >
         <ResponsiveContainer width="100%" height="100%">
-          <Tree
-            data={data}
-            nodeSize={{ x: 200, y: 100 }}
-            orientation="vertical"
-            separation={{ siblings: 1, nonSiblings: 2 }}
-            nodePadding={20}
-            fill="#4f46e5"
+          <Treemap
+            data={[{ name: "Learning Path", children: data }]}
+            dataKey="size"
             stroke="#fff"
+            fill="#4f46e5"
+            content={({ root, depth, x, y, width, height, index, payload, colors, rank, name, category }) => {
+              const isRoot = depth === 0;
+              const isCourse = category === "course";
+              const color = isCourse ? COLORS.course : COLORS.topic;
+
+              return (
+                <g>
+                  <rect
+                    x={x}
+                    y={y}
+                    width={width}
+                    height={height}
+                    fill={color}
+                    stroke="#fff"
+                  />
+                  {width > 50 && height > 30 && (
+                    <text
+                      x={x + width / 2}
+                      y={y + height / 2}
+                      textAnchor="middle"
+                      fill="#fff"
+                      fontSize={12}
+                      className="select-none"
+                    >
+                      {name}
+                    </text>
+                  )}
+                </g>
+              );
+            }}
           >
             <Tooltip
               content={({ active, payload }) => {
@@ -74,7 +104,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
                 return null;
               }}
             />
-          </Tree>
+          </Treemap>
         </ResponsiveContainer>
       </ChartContainer>
     </div>
