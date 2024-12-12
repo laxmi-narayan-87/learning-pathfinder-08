@@ -14,9 +14,10 @@ interface Question {
 interface SkillAssessmentProps {
   topic: string;
   questions: Question[];
+  onComplete?: () => void;
 }
 
-export const SkillAssessment = ({ topic, questions }: SkillAssessmentProps) => {
+export const SkillAssessment = ({ topic, questions, onComplete }: SkillAssessmentProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
@@ -65,15 +66,25 @@ export const SkillAssessment = ({ topic, questions }: SkillAssessmentProps) => {
         <p className="text-lg mb-4">
           You scored {score} out of {questions.length}
         </p>
-        <Button
-          onClick={() => {
-            setCurrentQuestion(0);
-            setScore(0);
-            setShowResults(false);
-          }}
-        >
-          Retake Assessment
-        </Button>
+        <div className="space-x-4">
+          <Button
+            onClick={() => {
+              setCurrentQuestion(0);
+              setScore(0);
+              setShowResults(false);
+            }}
+          >
+            Retake Assessment
+          </Button>
+          <Button
+            variant="default"
+            onClick={() => {
+              onComplete?.();
+            }}
+          >
+            Complete Topic
+          </Button>
+        </div>
       </Card>
     );
   }
