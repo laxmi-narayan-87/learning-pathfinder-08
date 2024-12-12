@@ -108,7 +108,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
             dataKey="size"
             stroke="#fff"
             fill="#4f46e5"
-            content={renderContent}
+            content={renderContent as any}
           >
             <Tooltip
               content={({ active, payload }) => {
