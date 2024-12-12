@@ -7,18 +7,18 @@ const categories = [
     title: "Beginner Roadmaps",
     description: "Start here if you're new to programming",
     paths: [
-      { name: "Frontend Developer", description: "Learn to build user interfaces" },
-      { name: "Backend Developer", description: "Master server-side development" },
-      { name: "Full Stack Developer", description: "Cover both frontend and backend" }
+      { name: "Frontend Developer", id: "frontend", description: "Learn to build user interfaces" },
+      { name: "Backend Developer", id: "backend", description: "Master server-side development" },
+      { name: "Full Stack Developer", id: "fullstack", description: "Cover both frontend and backend" }
     ]
   },
   {
     title: "Specialized Paths",
     description: "Deep dive into specific domains",
     paths: [
-      { name: "Data Science", description: "Master data analysis and ML" },
-      { name: "DevOps", description: "Learn deployment and operations" },
-      { name: "Mobile Development", description: "Build mobile applications" }
+      { name: "Web Scraping", id: "webscraping", description: "Master web scraping and automation" },
+      { name: "DevOps", id: "devops", description: "Learn deployment and operations" },
+      { name: "Mobile Development", id: "mobile", description: "Build mobile applications" }
     ]
   }
 ];
@@ -38,7 +38,7 @@ const RoadmapCategories = () => {
                   <h3 className="text-xl font-semibold mb-2">{path.name}</h3>
                   <p className="text-gray-600 mb-4">{path.description}</p>
                   <Link 
-                    to={`/roadmap/${path.name.toLowerCase().replace(/ /g, '-')}`}
+                    to={`/roadmap/${path.id}`}
                     className="inline-flex items-center text-primary hover:text-primary/80"
                   >
                     View Roadmap
