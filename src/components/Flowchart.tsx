@@ -2,7 +2,9 @@ import { ChartContainer } from "@/components/ui/chart";
 import {
   Treemap,
   ResponsiveContainer,
-  Tooltip
+  Tooltip,
+  Tree,
+  TreeProps
 } from "recharts";
 
 interface Section {
@@ -15,54 +17,65 @@ interface FlowchartProps {
 }
 
 export const Flowchart = ({ sections }: FlowchartProps) => {
-  // Transform sections data for the treemap
-  const data = sections.map((section) => ({
-    name: section.title,
-    size: section.topics.length,
-    children: section.topics.map((topic) => ({
-      name: topic,
-      size: 1,
+  // Transform sections data for the tree
+  const data = {
+    name: "Learning Path",
+    children: sections.map((section) => ({
+      name: section.title,
+      children: [
+        {
+          name: "Topics",
+          children: section.topics.map((topic) => ({
+            name: topic,
+          })),
+        },
+        {
+          name: "Recommended Courses",
+          children: [
+            { name: "Udemy Course" },
+            { name: "Coursera Course" },
+            { name: "edX Course" },
+          ],
+        },
+      ],
     })),
-  }));
-
-  const COLORS = [
-    "#4f46e5",
-    "#7c3aed",
-    "#2563eb",
-    "#0891b2",
-    "#0d9488",
-    "#059669",
-  ];
+  };
 
   return (
-    <div className="w-full h-[400px]">
+    <div className="w-full h-[600px] overflow-auto">
       <ChartContainer
         config={{
           colors: {
             theme: {
-              light: COLORS[0],
-              dark: COLORS[1],
+              background: "transparent",
             },
           },
         }}
       >
-        <Treemap
-          data={[{ name: "roadmap", children: data }]}
-          dataKey="size"
-          stroke="#fff"
-          fill="#4f46e5"
-        >
-          <Tooltip content={({ active, payload }) => {
-            if (active && payload && payload.length) {
-              return (
-                <div className="bg-white p-2 rounded shadow">
-                  <p className="text-sm">{payload[0].payload.name}</p>
-                </div>
-              );
-            }
-            return null;
-          }} />
-        </Treemap>
+        <ResponsiveContainer width="100%" height="100%">
+          <Tree
+            data={data}
+            nodeSize={{ x: 200, y: 100 }}
+            orientation="vertical"
+            separation={{ siblings: 1, nonSiblings: 2 }}
+            nodePadding={20}
+            fill="#4f46e5"
+            stroke="#fff"
+          >
+            <Tooltip
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div className="bg-white p-2 rounded shadow">
+                      <p className="text-sm">{payload[0].payload.name}</p>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
+          </Tree>
+        </ResponsiveContainer>
       </ChartContainer>
     </div>
   );
