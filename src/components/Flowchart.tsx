@@ -81,7 +81,8 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
     const isCourse = category === "course";
     const isTopic = category === "topic";
     const color = isStage ? COLORS.stage : isCourse ? COLORS.course : COLORS.topic;
-    const isCompleted = isTopic && payload.completed;
+    // Add a safety check for payload and completed property
+    const isCompleted = isTopic && payload && 'completed' in payload ? payload.completed : false;
 
     return (
       <g>
