@@ -1,5 +1,12 @@
 import { Star } from "lucide-react";
-import type { Course } from "./RoadmapCard";
+
+export interface Course {
+  id: string;
+  title: string;
+  platform: string;
+  rating: number;
+  url: string;
+}
 
 const CourseList = ({ courses }: { courses: Course[] }) => {
   return (
