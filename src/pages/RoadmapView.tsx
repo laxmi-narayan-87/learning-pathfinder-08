@@ -9,6 +9,43 @@ import CourseList from "@/components/CourseList";
 import { useQuery } from "@tanstack/react-query";
 import { useUserProgress } from "@/hooks/useUserProgress";
 import PreferencesForm from "@/components/PreferencesForm";
+import { SkillAssessment } from "@/components/SkillAssessment";
+
+const sampleQuestions = [
+  {
+    id: 1,
+    text: "What is the primary purpose of HTML in web development?",
+    options: [
+      "Styling web pages",
+      "Structuring content",
+      "Handling server requests",
+      "Managing databases"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 2,
+    text: "Which CSS property is used to change text color?",
+    options: [
+      "text-color",
+      "font-color",
+      "color",
+      "text-style"
+    ],
+    correctAnswer: 2
+  },
+  {
+    id: 3,
+    text: "What is the correct way to declare a JavaScript variable?",
+    options: [
+      "variable name = value",
+      "var name = value",
+      "v name = value",
+      "variable: value"
+    ],
+    correctAnswer: 1
+  }
+];
 
 const fetchTopCourses = async (topic: string) => {
   console.log("Fetching courses for:", topic);
@@ -84,6 +121,14 @@ const RoadmapView = () => {
             <div>
               <h2 className="text-2xl font-semibold mb-4">Learning Path</h2>
               <Flowchart sections={roadmap.sections} />
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Skill Assessment</h2>
+              <SkillAssessment 
+                topic={roadmap.title}
+                questions={sampleQuestions}
+              />
             </div>
 
             <div>
