@@ -71,17 +71,17 @@ export const backendRoadmap = {
     {
       title: "Node.js Documentation",
       url: "https://nodejs.org/docs/latest/",
-      type: "documentation"
+      type: "documentation" as const
     },
     {
       title: "PostgreSQL Tutorial",
       url: "https://www.postgresqltutorial.com/",
-      type: "tutorial"
+      type: "tutorial" as const
     },
     {
       title: "REST API Design Best Practices",
       url: "https://github.com/microsoft/api-guidelines",
-      type: "guide"
+      type: "guide" as const
     }
   ]
 };

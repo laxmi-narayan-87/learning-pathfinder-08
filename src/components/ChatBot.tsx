@@ -9,13 +9,14 @@ import { useRoadmaps } from "../hooks/useRoadmaps";
 const COOKIE_MESSAGES = "chat_messages";
 const COOKIE_CHAT_OPEN = "chat_open";
 
-const generateResponse = (question: string, roadmaps: any[]): string => {
+const generateResponse = (question: string, roadmapsData: any): string => {
   console.log("Generating response for:", question);
   const questionLower = question.toLowerCase();
   
   // Check if the question is about roadmaps
   if (questionLower.includes("roadmap") || questionLower.includes("learn")) {
     // Extract the subject from the question
+    const roadmaps = roadmapsData?.roadmaps || [];
     const subjects = roadmaps.map(r => r.title.toLowerCase());
     const matchedSubject = subjects.find(subject => questionLower.includes(subject));
     
@@ -23,9 +24,11 @@ const generateResponse = (question: string, roadmaps: any[]): string => {
       const roadmap = roadmaps.find(r => r.title.toLowerCase() === matchedSubject);
       if (roadmap) {
         const coursesList = roadmap.courses
-          .slice(0, 3)
-          .map(course => `\n- ${course.title} (${course.platform}, Rating: ${course.rating})`)
-          .join("");
+          ? roadmap.courses
+              .slice(0, 3)
+              .map(course => `\n- ${course.title} (${course.platform}, Rating: ${course.rating})`)
+              .join("")
+          : "";
         
         return `Here's a roadmap for ${roadmap.title}:\n${roadmap.description}\n\nTop recommended courses:${coursesList}\n\nWould you like more specific information about any of these courses?`;
       }

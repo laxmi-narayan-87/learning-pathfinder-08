@@ -69,17 +69,17 @@ export const frontendRoadmap = {
     {
       title: "MDN Web Docs",
       url: "https://developer.mozilla.org/",
-      type: "documentation"
+      type: "documentation" as const
     },
     {
       title: "Frontend Masters",
       url: "https://frontendmasters.com/",
-      type: "course"
+      type: "course" as const
     },
     {
       title: "React Documentation",
       url: "https://react.dev/",
-      type: "documentation"
+      type: "documentation" as const
     }
   ]
 };
