@@ -1,67 +1,83 @@
 export const frontendRoadmap = {
   id: "frontend",
   title: "Frontend Developer",
-  description: "Step by step guide to becoming a frontend developer",
+  description: "A comprehensive step-by-step guide to becoming a frontend developer",
   sections: [
     {
-      title: "Internet Fundamentals",
+      title: "Prerequisites",
       topics: [
-        "How the internet works",
-        "HTTP/HTTPS protocols",
-        "DNS and hosting",
-        "Browsers and their working"
+        "Basic Computer Skills",
+        "Understanding of Internet",
+        "Text Editor/IDE Setup",
+        "Terminal Basics",
+        "Git Basics"
       ]
     },
     {
       title: "HTML Foundations",
       topics: [
-        "HTML basics",
-        "Semantic HTML",
-        "Forms and validations",
-        "Conventions and best practices"
+        "HTML Syntax & Structure",
+        "HTML5 Semantic Elements",
+        "Forms & Validation",
+        "SEO Basics",
+        "Accessibility (a11y)"
       ]
     },
     {
-      title: "CSS Fundamentals",
+      title: "CSS Essentials",
       topics: [
-        "CSS basics",
-        "Selectors and specificity",
-        "Box model",
+        "CSS Selectors & Properties",
+        "Box Model & Layout",
         "Flexbox",
-        "Grid",
-        "Responsive design",
-        "Animations"
+        "CSS Grid",
+        "Responsive Design",
+        "CSS Variables",
+        "CSS Animations"
       ]
     },
     {
-      title: "JavaScript",
+      title: "JavaScript Core",
       topics: [
-        "Syntax basics",
-        "DOM manipulation",
-        "Fetch API / AJAX",
-        "ES6+ features",
-        "Promises and async programming",
-        "Error handling"
+        "Variables & Data Types",
+        "Functions & Scope",
+        "DOM Manipulation",
+        "Events & Event Handling",
+        "Async Programming",
+        "ES6+ Features",
+        "Error Handling"
       ]
     },
     {
-      title: "Framework",
+      title: "Frontend Framework",
       topics: [
-        "React.js",
-        "State management",
-        "Routing",
-        "Component lifecycle",
+        "React Fundamentals",
+        "Components & Props",
+        "State Management",
         "Hooks",
-        "Performance optimization"
+        "Routing",
+        "API Integration"
       ]
     },
     {
-      title: "Version Control",
+      title: "Development Tools",
       topics: [
-        "Git basics",
-        "GitHub",
-        "Branching strategies",
-        "Collaborative development"
+        "Package Managers (npm/yarn)",
+        "Build Tools (Vite/Webpack)",
+        "Browser DevTools",
+        "Testing (Jest/RTL)",
+        "Performance Optimization",
+        "Debugging Techniques"
+      ]
+    },
+    {
+      title: "Advanced Concepts",
+      topics: [
+        "TypeScript",
+        "State Management (Redux/Context)",
+        "Server-Side Rendering",
+        "Progressive Web Apps",
+        "Web Security",
+        "CI/CD Basics"
       ]
     }
   ],
@@ -69,17 +85,27 @@ export const frontendRoadmap = {
     {
       title: "MDN Web Docs",
       url: "https://developer.mozilla.org/",
-      type: "documentation" as const
+      type: "documentation"
     },
     {
-      title: "Frontend Masters",
-      url: "https://frontendmasters.com/",
-      type: "course" as const
+      title: "freeCodeCamp",
+      url: "https://www.freecodecamp.org/",
+      type: "course"
     },
     {
       title: "React Documentation",
       url: "https://react.dev/",
-      type: "documentation" as const
+      type: "documentation"
+    },
+    {
+      title: "Frontend Masters",
+      url: "https://frontendmasters.com/",
+      type: "course"
+    },
+    {
+      title: "CSS Tricks",
+      url: "https://css-tricks.com/",
+      type: "documentation"
     }
   ]
 };
