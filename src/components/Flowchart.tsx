@@ -4,6 +4,7 @@ import {
   ResponsiveContainer,
   Tooltip
 } from "recharts";
+import { ReactElement } from "react";
 
 interface Section {
   title: string;
@@ -12,6 +13,21 @@ interface Section {
 
 interface FlowchartProps {
   sections: Section[];
+}
+
+interface TreemapContentProps {
+  root: any;
+  depth: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  index: number;
+  payload: any;
+  colors: any;
+  rank: any;
+  name: string;
+  category?: "topic" | "course";
 }
 
 export const Flowchart = ({ sections }: FlowchartProps) => {
@@ -23,15 +39,15 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
       ...section.topics.map((topic) => ({
         name: topic,
         size: 1,
-        category: "topic"
+        category: "topic" as const
       })),
       {
         name: "Recommended Courses",
         size: 3,
         children: [
-          { name: "Udemy Course", size: 1, category: "course" },
-          { name: "Coursera Course", size: 1, category: "course" },
-          { name: "edX Course", size: 1, category: "course" }
+          { name: "Udemy Course", size: 1, category: "course" as const },
+          { name: "Coursera Course", size: 1, category: "course" as const },
+          { name: "edX Course", size: 1, category: "course" as const }
         ]
       }
     ]
@@ -41,6 +57,37 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
     topic: "#4f46e5",
     course: "#7c3aed",
     default: "#2563eb"
+  };
+
+  const renderContent = (props: TreemapContentProps): ReactElement => {
+    const { x, y, width, height, name, category } = props;
+    const isCourse = category === "course";
+    const color = isCourse ? COLORS.course : COLORS.topic;
+
+    return (
+      <g>
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          fill={color}
+          stroke="#fff"
+        />
+        {width > 50 && height > 30 && (
+          <text
+            x={x + width / 2}
+            y={y + height / 2}
+            textAnchor="middle"
+            fill="#fff"
+            fontSize={12}
+            className="select-none"
+          >
+            {name}
+          </text>
+        )}
+      </g>
+    );
   };
 
   return (
@@ -61,36 +108,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
             dataKey="size"
             stroke="#fff"
             fill="#4f46e5"
-            content={({ root, depth, x, y, width, height, index, payload, colors, rank, name, category }) => {
-              const isRoot = depth === 0;
-              const isCourse = category === "course";
-              const color = isCourse ? COLORS.course : COLORS.topic;
-
-              return (
-                <g>
-                  <rect
-                    x={x}
-                    y={y}
-                    width={width}
-                    height={height}
-                    fill={color}
-                    stroke="#fff"
-                  />
-                  {width > 50 && height > 30 && (
-                    <text
-                      x={x + width / 2}
-                      y={y + height / 2}
-                      textAnchor="middle"
-                      fill="#fff"
-                      fontSize={12}
-                      className="select-none"
-                    >
-                      {name}
-                    </text>
-                  )}
-                </g>
-              );
-            }}
+            content={renderContent}
           >
             <Tooltip
               content={({ active, payload }) => {
