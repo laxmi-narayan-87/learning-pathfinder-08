@@ -129,7 +129,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
         fitView
         minZoom={0.3} // Decreased min zoom to show more content
         maxZoom={2} // Increased max zoom for better detail view
-        defaultZoom={0.7} // Set default zoom level
+        defaultViewport={{ x: 0, y: 0, zoom: 0.7 }} // Changed from defaultZoom to defaultViewport
       >
         <Background size={2} />
         <Controls showInteractive={true} />
