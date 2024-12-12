@@ -4,7 +4,6 @@ import SearchBar from "../components/SearchBar";
 import RoadmapCard from "../components/RoadmapCard";
 import { useRoadmaps } from "../hooks/useRoadmaps";
 import { Loader2 } from "lucide-react";
-import ChatBot from "../components/ChatBot";
 
 const Index = () => {
   const { data: roadmaps, isLoading } = useRoadmaps();
@@ -21,9 +20,13 @@ const Index = () => {
       <main className="py-16">
         <div className="container px-4 mx-auto">
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-center mb-8">
-              Explore Learning Roadmaps
-            </h2>
+            <div className="text-center max-w-2xl mx-auto mb-8">
+              <h2 className="text-3xl font-bold mb-4">Developer Roadmaps</h2>
+              <p className="text-gray-600">
+                Step by step guides and learning paths to become a modern developer. 
+                Choose a learning path and start your development journey.
+              </p>
+            </div>
             <SearchBar onSearch={setSearchQuery} />
           </div>
 
@@ -40,7 +43,6 @@ const Index = () => {
           )}
         </div>
       </main>
-      <ChatBot />
     </div>
   );
 };
