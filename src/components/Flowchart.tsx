@@ -36,14 +36,14 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
       nodes.push({
         id: `section-${sectionIndex}`,
         type: 'roadmapNode',
-        position: { x: 400, y: yOffset },
+        position: { x: 500, y: yOffset }, // Increased x position for more space
         data: { 
           label: `Stage ${sectionIndex + 1}: ${section.title}`,
           type: 'resource'
         }
       });
 
-      yOffset += 100;
+      yOffset += 150; // Increased vertical spacing
 
       // Add topic nodes
       section.topics.forEach((topic, topicIndex) => {
@@ -52,8 +52,8 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
           id: `topic-${sectionIndex}-${topicIndex}`,
           type: 'roadmapNode',
           position: { 
-            x: 400 + (topicIndex % 2 ? 200 : -200), 
-            y: yOffset + topicIndex * 100 
+            x: 500 + (topicIndex % 2 ? 300 : -300), // Increased horizontal spacing
+            y: yOffset + topicIndex * 150 // Increased vertical spacing
           },
           data: {
             label: topic,
@@ -63,7 +63,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
         });
       });
 
-      yOffset += (section.topics.length + 1) * 100;
+      yOffset += (section.topics.length + 1) * 150; // Increased section spacing
     });
 
     return nodes;
@@ -119,7 +119,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
   };
 
   return (
-    <div className="w-full h-[600px] overflow-hidden bg-white rounded-xl shadow-lg">
+    <div className="w-full h-[800px] overflow-hidden bg-white rounded-xl shadow-lg"> {/* Increased height */}
       <ReactFlow
         nodes={createNodes()}
         edges={createEdges()}
@@ -127,16 +127,18 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
         edgeTypes={edgeTypes}
         onNodeClick={handleNodeClick}
         fitView
-        minZoom={0.5}
-        maxZoom={1.5}
+        minZoom={0.3} // Decreased min zoom to show more content
+        maxZoom={2} // Increased max zoom for better detail view
+        defaultZoom={0.7} // Set default zoom level
       >
-        <Background />
-        <Controls />
+        <Background size={2} />
+        <Controls showInteractive={true} />
         <MiniMap 
           nodeColor={(node) => {
             if (node.data?.completed) return '#22c55e';
             return node.data?.type === 'topic' ? '#6366f1' : '#8b5cf6';
           }}
+          style={{ height: 120, width: 200 }} // Increased minimap size
         />
       </ReactFlow>
     </div>
