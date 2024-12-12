@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { roadmapCategories } from "../data/roadmapCategories";
 import { frontendRoadmap } from "../data/roadmaps/frontend";
 import { backendRoadmap } from "../data/roadmaps/backend";
+import { webscrapingRoadmap } from "../data/roadmaps/webscraping";
 
 export interface Resource {
   title: string;
@@ -28,6 +29,8 @@ const getRoadmapData = (id: string): Roadmap | null => {
       return frontendRoadmap;
     case "backend":
       return backendRoadmap;
+    case "webscraping":
+      return webscrapingRoadmap;
     default:
       return null;
   }
@@ -40,7 +43,7 @@ export const useRoadmaps = () => {
       // Simulate API call with local data
       return {
         categories: roadmapCategories,
-        roadmaps: [frontendRoadmap, backendRoadmap]
+        roadmaps: [frontendRoadmap, backendRoadmap, webscrapingRoadmap]
       };
     },
     staleTime: 1000 * 60 * 5, // 5 minutes

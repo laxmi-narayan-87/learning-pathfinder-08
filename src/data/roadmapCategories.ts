@@ -28,5 +28,10 @@ export const roadmapCategories = {
     title: "AI and Data Science",
     description: "Machine learning and data analysis",
     roadmaps: ["ai", "data-science", "mlops", "prompt-engineering"]
+  },
+  automation: {
+    title: "Automation and Scraping",
+    description: "Web scraping, automation, and data extraction",
+    roadmaps: ["webscraping", "automation", "data-extraction"]
   }
 };
