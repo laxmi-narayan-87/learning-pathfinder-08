@@ -1,9 +1,10 @@
-import { ChartContainer } from "@/components/ui/chart";
-import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
-import { ReactElement } from "react";
+import { ReactFlow, Background, Controls, MiniMap } from "@xyflow/react";
+import { useCallback } from "react";
 import { useUserProgress } from "@/hooks/useUserProgress";
-import { CheckCircle2, BookOpen, Lightbulb, Code } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { RoadmapNode } from "./roadmap/RoadmapNode";
+import { RoadmapEdge } from "./roadmap/RoadmapEdge";
+import { RoadmapTooltip } from "./roadmap/RoadmapTooltip";
 
 interface Section {
   title: string;
@@ -14,200 +15,130 @@ interface FlowchartProps {
   sections: Section[];
 }
 
-interface TreemapContentProps {
-  root: any;
-  depth: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  index: number;
-  payload: any;
-  colors: any;
-  rank: any;
-  name: string;
-  category?: "topic" | "course" | "stage";
-}
+const nodeTypes = {
+  roadmapNode: RoadmapNode,
+};
+
+const edgeTypes = {
+  roadmapEdge: RoadmapEdge,
+};
 
 export const Flowchart = ({ sections }: FlowchartProps) => {
   const { progress, markTopicComplete } = useUserProgress();
   const { toast } = useToast();
 
-  const data = sections.map((section, index) => ({
-    name: `Stage ${index + 1}: ${section.title}`,
-    size: section.topics.length + 3,
-    category: "stage" as const,
-    children: [
-      ...section.topics.map((topic) => ({
-        name: topic,
-        size: 1,
-        category: "topic" as const,
-        completed: progress.completedTopics.includes(topic)
-      })),
-      {
-        name: "Learning Resources",
-        size: 3,
-        children: [
-          { 
-            name: "Interactive Tutorials", 
-            size: 1, 
-            category: "course" as const,
-            icon: "tutorial"
+  const createNodes = useCallback(() => {
+    const nodes = [];
+    let yOffset = 0;
+
+    sections.forEach((section, sectionIndex) => {
+      // Add section header node
+      nodes.push({
+        id: `section-${sectionIndex}`,
+        type: 'roadmapNode',
+        position: { x: 400, y: yOffset },
+        data: { 
+          label: `Stage ${sectionIndex + 1}: ${section.title}`,
+          type: 'resource'
+        }
+      });
+
+      yOffset += 100;
+
+      // Add topic nodes
+      section.topics.forEach((topic, topicIndex) => {
+        const isCompleted = progress.completedTopics.includes(topic);
+        nodes.push({
+          id: `topic-${sectionIndex}-${topicIndex}`,
+          type: 'roadmapNode',
+          position: { 
+            x: 400 + (topicIndex % 2 ? 200 : -200), 
+            y: yOffset + topicIndex * 100 
           },
-          { 
-            name: "Documentation", 
-            size: 1, 
-            category: "course" as const,
-            icon: "docs"
-          },
-          { 
-            name: "Practice Projects", 
-            size: 1, 
-            category: "course" as const,
-            icon: "project"
+          data: {
+            label: topic,
+            type: 'topic',
+            completed: isCompleted
           }
-        ]
+        });
+      });
+
+      yOffset += (section.topics.length + 1) * 100;
+    });
+
+    return nodes;
+  }, [sections, progress.completedTopics]);
+
+  const createEdges = useCallback(() => {
+    const edges = [];
+    
+    sections.forEach((section, sectionIndex) => {
+      // Connect section to its first topic
+      edges.push({
+        id: `e-section-${sectionIndex}`,
+        source: `section-${sectionIndex}`,
+        target: `topic-${sectionIndex}-0`,
+        type: 'roadmapEdge'
+      });
+
+      // Connect topics within section
+      section.topics.forEach((_, topicIndex) => {
+        if (topicIndex < section.topics.length - 1) {
+          edges.push({
+            id: `e-topic-${sectionIndex}-${topicIndex}`,
+            source: `topic-${sectionIndex}-${topicIndex}`,
+            target: `topic-${sectionIndex}-${topicIndex + 1}`,
+            type: 'roadmapEdge'
+          });
+        }
+      });
+
+      // Connect last topic to next section
+      if (sectionIndex < sections.length - 1) {
+        edges.push({
+          id: `e-section-connect-${sectionIndex}`,
+          source: `topic-${sectionIndex}-${section.topics.length - 1}`,
+          target: `section-${sectionIndex + 1}`,
+          type: 'roadmapEdge'
+        });
       }
-    ]
-  }));
+    });
 
-  const COLORS = {
-    stage: "#3b82f6",
-    topic: "#6366f1",
-    course: "#8b5cf6",
-    completed: "#22c55e",
-    hover: "#4f46e5"
-  };
+    return edges;
+  }, [sections]);
 
-  const handleTopicClick = (topic: string) => {
-    if (!progress.completedTopics.includes(topic)) {
-      markTopicComplete(topic);
+  const handleNodeClick = (event: React.MouseEvent, node: any) => {
+    if (node.data.type === 'topic') {
+      markTopicComplete(node.data.label);
       toast({
         title: "Topic Completed! 🎉",
-        description: `Great job completing "${topic}"!`,
+        description: `Great job completing "${node.data.label}"!`,
         duration: 3000
       });
     }
   };
 
-  const getResourceIcon = (icon?: string) => {
-    switch (icon) {
-      case "tutorial":
-        return <Lightbulb className="text-yellow-300" size={16} />;
-      case "docs":
-        return <BookOpen className="text-blue-300" size={16} />;
-      case "project":
-        return <Code className="text-purple-300" size={16} />;
-      default:
-        return null;
-    }
-  };
-
-  const renderContent = (props: TreemapContentProps): ReactElement => {
-    const { x, y, width, height, name, category, payload } = props;
-    const isStage = category === "stage";
-    const isCourse = category === "course";
-    const isTopic = category === "topic";
-    
-    // Add safety check for payload and completed property
-    const isCompleted = isTopic && payload && 'completed' in payload ? payload.completed : false;
-    const icon = payload?.icon;
-    
-    const backgroundColor = isCompleted ? COLORS.completed : 
-      isStage ? COLORS.stage : 
-      isCourse ? COLORS.course : 
-      COLORS.topic;
-
-    return (
-      <g>
-        <rect
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          fill={backgroundColor}
-          stroke="#fff"
-          strokeWidth={isStage ? 2 : 1}
-          rx={isStage ? 8 : 4}
-          className={isTopic ? "cursor-pointer transition-colors duration-200 hover:fill-[#4f46e5]" : ""}
-          onClick={() => isTopic && handleTopicClick(name)}
-        />
-        {width > 50 && height > 30 && (
-          <>
-            <text
-              x={x + (isCompleted || icon ? 24 : width / 2)}
-              y={y + height / 2}
-              textAnchor={isCompleted || icon ? "start" : "middle"}
-              fill="#fff"
-              fontSize={isStage ? 14 : 12}
-              fontWeight={isStage ? "bold" : "normal"}
-              className="select-none pointer-events-none"
-            >
-              {name}
-            </text>
-            {isCompleted && (
-              <CheckCircle2
-                className="text-white/90"
-                x={x + 6}
-                y={y + height / 2 - 8}
-                width={16}
-                height={16}
-              />
-            )}
-            {icon && getResourceIcon(icon)}
-          </>
-        )}
-      </g>
-    );
-  };
-
   return (
-    <div className="w-full h-[600px] overflow-auto bg-white rounded-xl shadow-lg p-6">
-      <ChartContainer
-        config={{
-          colors: {
-            theme: {
-              light: COLORS.stage,
-              dark: COLORS.topic
-            },
-          },
-        }}
+    <div className="w-full h-[600px] overflow-hidden bg-white rounded-xl shadow-lg">
+      <ReactFlow
+        nodes={createNodes()}
+        edges={createEdges()}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        onNodeClick={handleNodeClick}
+        fitView
+        minZoom={0.5}
+        maxZoom={1.5}
       >
-        <ResponsiveContainer width="100%" height="100%">
-          <Treemap
-            data={[{ name: "Frontend Development Path", children: data }]}
-            dataKey="size"
-            stroke="#fff"
-            fill="#4f46e5"
-            content={renderContent as any}
-            animationDuration={300}
-          >
-            <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const data = payload[0].payload;
-                  return (
-                    <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
-                      <p className="font-semibold">{data.name}</p>
-                      {data.category && (
-                        <p className="text-sm text-gray-600 capitalize mt-1">
-                          {data.category}
-                        </p>
-                      )}
-                      {data.category === "topic" && (
-                        <p className="text-sm text-gray-600 mt-1">
-                          {data.completed ? "✅ Completed" : "Click to mark as complete"}
-                        </p>
-                      )}
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-          </Treemap>
-        </ResponsiveContainer>
-      </ChartContainer>
+        <Background />
+        <Controls />
+        <MiniMap 
+          nodeColor={(node) => {
+            if (node.data?.completed) return '#22c55e';
+            return node.data?.type === 'topic' ? '#6366f1' : '#8b5cf6';
+          }}
+        />
+      </ReactFlow>
     </div>
   );
 };
