@@ -1,13 +1,54 @@
+import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
+
 const Hero = () => {
   return (
-    <div className="bg-gradient-to-r from-primary to-secondary py-20 text-white">
-      <div className="container px-4 mx-auto text-center">
-        <h1 className="text-4xl md:text-5xl font-bold mb-6">
-          SkillForge Academy
-        </h1>
-        <p className="text-xl md:text-2xl max-w-2xl mx-auto opacity-90">
-          Community driven roadmaps, learning paths and resources for self-guided developers
-        </p>
+    <div className="bg-gradient-to-r from-primary to-secondary">
+      <div className="container mx-auto">
+        {/* Navigation */}
+        <nav className="flex items-center justify-between py-4 text-white">
+          <div className="flex items-center space-x-8">
+            <Link to="/" className="text-xl font-bold">
+              SkillForge Academy
+            </Link>
+            <div className="hidden md:flex space-x-6">
+              <Link to="/roadmaps" className="hover:text-white/80">
+                Roadmaps
+              </Link>
+              <Link to="/teams" className="hover:text-white/80">
+                Teams
+              </Link>
+              <Link to="/changelog" className="hover:text-white/80">
+                Changelog
+              </Link>
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Button variant="outline" className="text-white border-white hover:bg-white/10">
+              Login
+            </Button>
+            <Button variant="secondary">Sign Up</Button>
+          </div>
+        </nav>
+
+        {/* Hero Content */}
+        <div className="py-20 text-center text-white">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Developer Roadmaps and Learning Paths
+          </h1>
+          <p className="text-xl md:text-2xl max-w-3xl mx-auto opacity-90 mb-8">
+            Community-driven roadmaps, learning paths, and resources for self-guided developers. 
+            Choose your path and start your development journey.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Button variant="secondary" size="lg">
+              View All Roadmaps
+            </Button>
+            <Button variant="outline" size="lg" className="text-white border-white hover:bg-white/10">
+              Join Community
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
