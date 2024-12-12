@@ -4,10 +4,11 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { Flowchart } from "@/components/Flowchart";
 import CourseList from "@/components/CourseList";
 import { useQuery } from "@tanstack/react-query";
+import { useUserProgress } from "@/hooks/useUserProgress";
+import PreferencesForm from "@/components/PreferencesForm";
 
 const fetchTopCourses = async (topic: string) => {
   console.log("Fetching courses for:", topic);
@@ -40,6 +41,7 @@ const fetchTopCourses = async (topic: string) => {
 const RoadmapView = () => {
   const { id } = useParams();
   const { data: roadmap, isLoading, error } = useRoadmap(id || "");
+  const { progress, preferences, markTopicComplete, updatePreferences, getRecommendedContent } = useUserProgress();
   
   const { data: topCourses } = useQuery({
     queryKey: ["courses", id],
@@ -55,6 +57,8 @@ const RoadmapView = () => {
     return <div className="p-8">Roadmap not found</div>;
   }
 
+  const { nextTopics, recommendedResources } = getRecommendedContent();
+
   return (
     <div className="container mx-auto py-8">
       <Link to="/" className="inline-flex items-center text-primary mb-6 hover:text-primary/80">
@@ -62,59 +66,58 @@ const RoadmapView = () => {
         Back to Roadmaps
       </Link>
       
-      <h1 className="text-4xl font-bold mb-4">{roadmap.title}</h1>
-      <p className="text-gray-600 mb-8">{roadmap.description}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <h1 className="text-4xl font-bold mb-4">{roadmap.title}</h1>
+          <p className="text-gray-600 mb-8">{roadmap.description}</p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Learning Path</h2>
-          <ScrollArea className="h-[600px] rounded-md border p-4">
-            {roadmap.sections.map((section, index) => (
-              <Card key={index} className="mb-6 p-4">
-                <h3 className="text-xl font-semibold mb-3">{section.title}</h3>
-                <ul className="space-y-2">
-                  {section.topics.map((topic, topicIndex) => (
-                    <li key={topicIndex} className="flex items-center">
-                      <span className="w-2 h-2 bg-primary rounded-full mr-2" />
-                      {topic}
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            ))}
-          </ScrollArea>
-        </div>
-
-        <div className="space-y-8">
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">Roadmap Visualization</h2>
-            <Card className="p-4">
-              <Flowchart sections={roadmap.sections} />
+          <div className="space-y-8">
+            <Card className="p-6">
+              <h2 className="text-2xl font-semibold mb-4">Your Progress</h2>
+              <div className="space-y-2">
+                <p>Completed topics: {progress.completedTopics.length}</p>
+                <p>Current level: {progress.currentLevel}</p>
+                <p>Last activity: {new Date(progress.lastActivity).toLocaleDateString()}</p>
+              </div>
             </Card>
-          </div>
 
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">Top Online Courses</h2>
-            {topCourses && <CourseList courses={topCourses} />}
-          </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Learning Path</h2>
+              <Flowchart sections={roadmap.sections} />
+            </div>
 
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">Additional Resources</h2>
-            <div className="space-y-4">
-              {roadmap.resources.map((resource, index) => (
-                <a
-                  key={index}
-                  href={resource.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block p-4 rounded-lg border hover:border-primary transition-colors"
-                >
-                  <h4 className="font-semibold mb-1">{resource.title}</h4>
-                  <p className="text-sm text-gray-500 capitalize">{resource.type}</p>
-                </a>
-              ))}
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Recommended Courses</h2>
+              {topCourses && <CourseList courses={topCourses} />}
             </div>
           </div>
+        </div>
+
+        <div>
+          <Card className="p-6">
+            <h2 className="text-2xl font-semibold mb-4">Learning Preferences</h2>
+            <PreferencesForm
+              initialPreferences={preferences}
+              onSave={updatePreferences}
+            />
+          </Card>
+
+          <Card className="p-6 mt-6">
+            <h2 className="text-2xl font-semibold mb-4">Next Steps</h2>
+            <div className="space-y-4">
+              {nextTopics.map((topic, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <span>{topic}</span>
+                  <button
+                    onClick={() => markTopicComplete(topic)}
+                    className="text-primary hover:text-primary/80"
+                  >
+                    Mark as complete
+                  </button>
+                </div>
+              ))}
+            </div>
+          </Card>
         </div>
       </div>
     </div>
