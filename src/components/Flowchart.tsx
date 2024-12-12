@@ -2,7 +2,7 @@ import { ChartContainer } from "@/components/ui/chart";
 import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
 import { ReactElement } from "react";
 import { useUserProgress } from "@/hooks/useUserProgress";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, BookOpen, Lightbulb, Code } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface Section {
@@ -33,7 +33,6 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
   const { progress, markTopicComplete } = useUserProgress();
   const { toast } = useToast();
 
-  // Transform sections data for the treemap with stages
   const data = sections.map((section, index) => ({
     name: `Stage ${index + 1}: ${section.title}`,
     size: section.topics.length + 3,
@@ -46,32 +45,61 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
         completed: progress.completedTopics.includes(topic)
       })),
       {
-        name: "Recommended Resources",
+        name: "Learning Resources",
         size: 3,
         children: [
-          { name: "Interactive Courses", size: 1, category: "course" as const },
-          { name: "Documentation", size: 1, category: "course" as const },
-          { name: "Practice Projects", size: 1, category: "course" as const }
+          { 
+            name: "Interactive Tutorials", 
+            size: 1, 
+            category: "course" as const,
+            icon: "tutorial"
+          },
+          { 
+            name: "Documentation", 
+            size: 1, 
+            category: "course" as const,
+            icon: "docs"
+          },
+          { 
+            name: "Practice Projects", 
+            size: 1, 
+            category: "course" as const,
+            icon: "project"
+          }
         ]
       }
     ]
   }));
 
   const COLORS = {
-    stage: "#2563eb",
-    topic: "#4f46e5",
-    course: "#7c3aed",
-    default: "#2563eb"
+    stage: "#3b82f6",
+    topic: "#6366f1",
+    course: "#8b5cf6",
+    completed: "#22c55e",
+    hover: "#4f46e5"
   };
 
   const handleTopicClick = (topic: string) => {
     if (!progress.completedTopics.includes(topic)) {
       markTopicComplete(topic);
       toast({
-        title: "Progress Updated",
-        description: `Marked "${topic}" as completed!`,
+        title: "Topic Completed! 🎉",
+        description: `Great job completing "${topic}"!`,
         duration: 3000
       });
+    }
+  };
+
+  const getResourceIcon = (icon?: string) => {
+    switch (icon) {
+      case "tutorial":
+        return <Lightbulb className="text-yellow-300" size={16} />;
+      case "docs":
+        return <BookOpen className="text-blue-300" size={16} />;
+      case "project":
+        return <Code className="text-purple-300" size={16} />;
+      default:
+        return null;
     }
   };
 
@@ -80,9 +108,15 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
     const isStage = category === "stage";
     const isCourse = category === "course";
     const isTopic = category === "topic";
-    const color = isStage ? COLORS.stage : isCourse ? COLORS.course : COLORS.topic;
-    // Add a safety check for payload and completed property
+    
+    // Add safety check for payload and completed property
     const isCompleted = isTopic && payload && 'completed' in payload ? payload.completed : false;
+    const icon = payload?.icon;
+    
+    const backgroundColor = isCompleted ? COLORS.completed : 
+      isStage ? COLORS.stage : 
+      isCourse ? COLORS.course : 
+      COLORS.topic;
 
     return (
       <g>
@@ -91,35 +125,36 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
           y={y}
           width={width}
           height={height}
-          fill={color}
+          fill={backgroundColor}
           stroke="#fff"
           strokeWidth={isStage ? 2 : 1}
-          rx={isStage ? 6 : 3}
-          className={isTopic ? "cursor-pointer hover:opacity-90" : ""}
+          rx={isStage ? 8 : 4}
+          className={isTopic ? "cursor-pointer transition-colors duration-200 hover:fill-[#4f46e5]" : ""}
           onClick={() => isTopic && handleTopicClick(name)}
         />
         {width > 50 && height > 30 && (
           <>
             <text
-              x={x + width / 2}
+              x={x + (isCompleted || icon ? 24 : width / 2)}
               y={y + height / 2}
-              textAnchor="middle"
+              textAnchor={isCompleted || icon ? "start" : "middle"}
               fill="#fff"
               fontSize={isStage ? 14 : 12}
               fontWeight={isStage ? "bold" : "normal"}
-              className="select-none"
+              className="select-none pointer-events-none"
             >
               {name}
             </text>
             {isCompleted && (
               <CheckCircle2
-                className="text-green-300"
-                x={x + width - 20}
-                y={y + 10}
+                className="text-white/90"
+                x={x + 6}
+                y={y + height / 2 - 8}
                 width={16}
                 height={16}
               />
             )}
+            {icon && getResourceIcon(icon)}
           </>
         )}
       </g>
@@ -127,12 +162,12 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
   };
 
   return (
-    <div className="w-full h-[600px] overflow-auto bg-white rounded-lg shadow-lg p-4">
+    <div className="w-full h-[600px] overflow-auto bg-white rounded-xl shadow-lg p-6">
       <ChartContainer
         config={{
           colors: {
             theme: {
-              light: COLORS.default,
+              light: COLORS.stage,
               dark: COLORS.topic
             },
           },
@@ -140,11 +175,12 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
       >
         <ResponsiveContainer width="100%" height="100%">
           <Treemap
-            data={[{ name: "Career Path", children: data }]}
+            data={[{ name: "Frontend Development Path", children: data }]}
             dataKey="size"
             stroke="#fff"
             fill="#4f46e5"
             content={renderContent as any}
+            animationDuration={300}
           >
             <Tooltip
               content={({ active, payload }) => {
@@ -160,7 +196,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
                       )}
                       {data.category === "topic" && (
                         <p className="text-sm text-gray-600 mt-1">
-                          {data.completed ? "Completed" : "Click to mark as complete"}
+                          {data.completed ? "✅ Completed" : "Click to mark as complete"}
                         </p>
                       )}
                     </div>
