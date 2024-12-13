@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useRoadmap } from "@/hooks/useRoadmaps";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, BookOpen, Github, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Flowchart } from "@/components/Flowchart";
 import CourseList from "@/components/CourseList";
@@ -10,75 +10,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useUserProgress } from "@/hooks/useUserProgress";
 import PreferencesForm from "@/components/PreferencesForm";
 import { SkillAssessment } from "@/components/SkillAssessment";
-
-const sampleQuestions = [
-  {
-    id: 1,
-    text: "What is the primary purpose of HTML in web development?",
-    options: [
-      "Styling web pages",
-      "Structuring content",
-      "Handling server requests",
-      "Managing databases"
-    ],
-    correctAnswer: 1
-  },
-  {
-    id: 2,
-    text: "Which CSS property is used to change text color?",
-    options: [
-      "text-color",
-      "font-color",
-      "color",
-      "text-style"
-    ],
-    correctAnswer: 2
-  },
-  {
-    id: 3,
-    text: "What is the correct way to declare a JavaScript variable?",
-    options: [
-      "variable name = value",
-      "var name = value",
-      "v name = value",
-      "variable: value"
-    ],
-    correctAnswer: 1
-  }
-];
-
-const fetchTopCourses = async (topic: string) => {
-  console.log("Fetching courses for:", topic);
-  // Simulated API call - in real app, replace with actual API endpoint
-  return [
-    {
-      id: "1",
-      title: "Complete Backend Development",
-      platform: "Udemy",
-      rating: 4.8,
-      url: "https://udemy.com"
-    },
-    {
-      id: "2",
-      title: "Node.js Advanced Concepts",
-      platform: "Coursera",
-      rating: 4.7,
-      url: "https://coursera.org"
-    },
-    {
-      id: "3",
-      title: "Database Design Masterclass",
-      platform: "edX",
-      rating: 4.9,
-      url: "https://edx.org"
-    }
-  ];
-};
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const RoadmapView = () => {
   const { id } = useParams();
   const { data: roadmap, isLoading, error } = useRoadmap(id || "");
-  const { progress, preferences, markTopicComplete, updatePreferences, getRecommendedContent } = useUserProgress();
+  const { progress, preferences, markTopicComplete, updatePreferences } = useUserProgress();
   
   const { data: topCourses } = useQuery({
     queryKey: ["courses", id],
@@ -87,86 +25,157 @@ const RoadmapView = () => {
   });
 
   if (isLoading) {
-    return <div className="p-8">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   if (error || !roadmap) {
-    return <div className="p-8">Roadmap not found</div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-2xl font-bold mb-4">Roadmap not found</h1>
+        <Link to="/" className="text-primary hover:underline">
+          Return to homepage
+        </Link>
+      </div>
+    );
   }
 
-  const { nextTopics, recommendedResources } = getRecommendedContent();
-
   return (
-    <div className="container mx-auto py-8">
-      <Link to="/" className="inline-flex items-center text-primary mb-6 hover:text-primary/80">
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Roadmaps
-      </Link>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <h1 className="text-4xl font-bold mb-4">{roadmap.title}</h1>
-          <p className="text-gray-600 mb-8">{roadmap.description}</p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-white border-b">
+        <div className="container mx-auto py-8">
+          <Link to="/" className="inline-flex items-center text-primary mb-6 hover:text-primary/80">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Roadmaps
+          </Link>
+          
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-4xl font-bold mb-4">{roadmap.title}</h1>
+              <p className="text-gray-600 max-w-2xl mb-6">{roadmap.description}</p>
+              
+              <div className="flex gap-4">
+                <Button variant="outline" className="gap-2">
+                  <Globe className="h-4 w-4" />
+                  Visit Website
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <Github className="h-4 w-4" />
+                  Contribute
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <BookOpen className="h-4 w-4" />
+                  Resources
+                </Button>
+              </div>
+            </div>
 
-          <div className="space-y-8">
-            <Card className="p-6">
-              <h2 className="text-2xl font-semibold mb-4">Your Progress</h2>
-              <div className="space-y-2">
-                <p>Completed topics: {progress.completedTopics.length}</p>
-                <p>Current level: {progress.currentLevel}</p>
-                <p>Last activity: {new Date(progress.lastActivity).toLocaleDateString()}</p>
+            <Card className="p-4 w-64">
+              <div className="text-sm text-gray-600 mb-2">Progress</div>
+              <div className="text-2xl font-bold mb-2">
+                {Math.round((progress.completedTopics.length / 
+                  roadmap.sections.reduce((acc, section) => acc + section.topics.length, 0)) * 100)}%
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-primary h-2.5 rounded-full" 
+                  style={{ 
+                    width: `${(progress.completedTopics.length / 
+                      roadmap.sections.reduce((acc, section) => acc + section.topics.length, 0)) * 100}%` 
+                  }}
+                ></div>
               </div>
             </Card>
-
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Learning Path</h2>
-              <Flowchart sections={roadmap.sections} />
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Skill Assessment</h2>
-              <SkillAssessment 
-                topic={roadmap.title}
-                questions={sampleQuestions}
-              />
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Recommended Courses</h2>
-              {topCourses && <CourseList courses={topCourses} />}
-            </div>
           </div>
         </div>
+      </div>
 
-        <div>
-          <Card className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Learning Preferences</h2>
-            <PreferencesForm
-              initialPreferences={preferences}
-              onSave={updatePreferences}
-            />
-          </Card>
+      <div className="container mx-auto py-8">
+        <Tabs defaultValue="interactive" className="w-full">
+          <TabsList className="mb-8">
+            <TabsTrigger value="interactive">Interactive Roadmap</TabsTrigger>
+            <TabsTrigger value="resources">Learning Resources</TabsTrigger>
+            <TabsTrigger value="preferences">Learning Preferences</TabsTrigger>
+          </TabsList>
 
-          <Card className="p-6 mt-6">
-            <h2 className="text-2xl font-semibold mb-4">Next Steps</h2>
-            <div className="space-y-4">
-              {nextTopics.map((topic, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span>{topic}</span>
-                  <button
-                    onClick={() => markTopicComplete(topic)}
-                    className="text-primary hover:text-primary/80"
-                  >
-                    Mark as complete
-                  </button>
-                </div>
-              ))}
+          <TabsContent value="interactive">
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <Flowchart sections={roadmap.sections} />
             </div>
-          </Card>
-        </div>
+          </TabsContent>
+
+          <TabsContent value="resources">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="p-6">
+                <h2 className="text-2xl font-semibold mb-4">Official Resources</h2>
+                <div className="space-y-4">
+                  {roadmap.resources.map((resource, index) => (
+                    <a
+                      key={index}
+                      href={resource.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <div>
+                        <div className="font-medium">{resource.title}</div>
+                        <div className="text-sm text-gray-500 capitalize">{resource.type}</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <h2 className="text-2xl font-semibold mb-4">Recommended Courses</h2>
+                {topCourses && <CourseList courses={topCourses} />}
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="preferences">
+            <Card className="p-6">
+              <h2 className="text-2xl font-semibold mb-4">Learning Preferences</h2>
+              <PreferencesForm
+                initialPreferences={preferences}
+                onSave={updatePreferences}
+              />
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
+};
+
+const fetchTopCourses = async (topic: string) => {
+  // Simulated API call - replace with actual implementation
+  return [
+    {
+      id: "1",
+      title: "Complete Frontend Development",
+      platform: "Udemy",
+      rating: 4.8,
+      url: "https://udemy.com"
+    },
+    {
+      id: "2",
+      title: "React.js Advanced Concepts",
+      platform: "Frontend Masters",
+      rating: 4.9,
+      url: "https://frontendmasters.com"
+    },
+    {
+      id: "3",
+      title: "Modern CSS Masterclass",
+      platform: "Coursera",
+      rating: 4.7,
+      url: "https://coursera.org"
+    }
+  ];
 };
 
 export default RoadmapView;

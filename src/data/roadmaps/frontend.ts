@@ -1,50 +1,55 @@
 export const frontendRoadmap = {
   id: "frontend",
   title: "Frontend Developer",
-  description: "A comprehensive step-by-step guide to becoming a frontend developer",
+  description: "Step by step guide to becoming a modern frontend developer",
   sections: [
     {
-      title: "Prerequisites",
+      title: "Internet & Web Fundamentals",
       topics: [
-        "Basic Computer Skills",
-        "Understanding of Internet",
-        "Text Editor/IDE Setup",
-        "Terminal Basics",
-        "Git Basics"
+        "How does the Internet Work?",
+        "What is HTTP/HTTPS?",
+        "DNS and Domain Names",
+        "Browsers and How they Work",
+        "Hosting and Deployment"
       ]
     },
     {
       title: "HTML Foundations",
       topics: [
-        "HTML Syntax & Structure",
-        "HTML5 Semantic Elements",
+        "HTML Basics & Document Structure",
+        "Semantic HTML",
         "Forms & Validation",
-        "SEO Basics",
-        "Accessibility (a11y)"
+        "Best Practices & Conventions",
+        "SEO Fundamentals"
       ]
     },
     {
-      title: "CSS Essentials",
+      title: "CSS Mastery",
       topics: [
-        "CSS Selectors & Properties",
+        "CSS Fundamentals",
+        "Selectors & Specificity",
         "Box Model & Layout",
         "Flexbox",
         "CSS Grid",
         "Responsive Design",
-        "CSS Variables",
-        "CSS Animations"
+        "CSS Animations",
+        "CSS Architecture (BEM)",
+        "CSS Preprocessors (Sass)",
+        "Modern CSS (Tailwind)"
       ]
     },
     {
-      title: "JavaScript Core",
+      title: "JavaScript Essentials",
       topics: [
-        "Variables & Data Types",
-        "Functions & Scope",
+        "JavaScript Syntax",
         "DOM Manipulation",
-        "Events & Event Handling",
-        "Async Programming",
+        "Event Handling",
         "ES6+ Features",
-        "Error Handling"
+        "Asynchronous JavaScript",
+        "Error Handling",
+        "JavaScript Modules",
+        "Browser Storage",
+        "HTTP Requests & APIs"
       ]
     },
     {
@@ -54,30 +59,35 @@ export const frontendRoadmap = {
         "Components & Props",
         "State Management",
         "Hooks",
-        "Routing",
-        "API Integration"
+        "Context API",
+        "React Router",
+        "API Integration",
+        "Performance Optimization",
+        "Testing in React"
       ]
     },
     {
-      title: "Development Tools",
+      title: "Build Tools & Deployment",
       topics: [
         "Package Managers (npm/yarn)",
-        "Build Tools (Vite/Webpack)",
-        "Browser DevTools",
-        "Testing (Jest/RTL)",
-        "Performance Optimization",
-        "Debugging Techniques"
+        "Module Bundlers (Vite/Webpack)",
+        "Version Control (Git)",
+        "CI/CD Basics",
+        "Deployment Platforms",
+        "Docker Basics",
+        "Cloud Services (AWS/Vercel)"
       ]
     },
     {
-      title: "Advanced Concepts",
+      title: "Professional Development",
       topics: [
-        "TypeScript",
-        "State Management (Redux/Context)",
-        "Server-Side Rendering",
-        "Progressive Web Apps",
-        "Web Security",
-        "CI/CD Basics"
+        "Code Review Best Practices",
+        "Agile Development",
+        "Technical Documentation",
+        "Open Source Contribution",
+        "Portfolio Development",
+        "Interview Preparation",
+        "Continuous Learning"
       ]
     }
   ],
@@ -85,27 +95,106 @@ export const frontendRoadmap = {
     {
       title: "MDN Web Docs",
       url: "https://developer.mozilla.org/",
-      type: "documentation" as const
-    },
-    {
-      title: "freeCodeCamp",
-      url: "https://www.freecodecamp.org/",
-      type: "course" as const
-    },
-    {
-      title: "React Documentation",
-      url: "https://react.dev/",
-      type: "documentation" as const
+      type: "documentation"
     },
     {
       title: "Frontend Masters",
       url: "https://frontendmasters.com/",
-      type: "course" as const
+      type: "course"
+    },
+    {
+      title: "React Documentation",
+      url: "https://react.dev/",
+      type: "documentation"
     },
     {
       title: "CSS Tricks",
       url: "https://css-tricks.com/",
-      type: "documentation" as const
+      type: "resource"
+    },
+    {
+      title: "JavaScript.info",
+      url: "https://javascript.info/",
+      type: "documentation"
+    }
+  ]
+};
+
+export const topicQuestions = {
+  "How does the Internet Work?": [
+    {
+      id: 1,
+      text: "What is the primary function of DNS?",
+      options: [
+        "To style web pages",
+        "To convert domain names to IP addresses",
+        "To encrypt data",
+        "To compress images"
+      ],
+      correctAnswer: 1
+    },
+    {
+      id: 2,
+      text: "Which protocol is used for secure data transmission over the web?",
+      options: ["HTTP", "HTTPS", "FTP", "SMTP"],
+      correctAnswer: 1
+    }
+  ],
+  "HTML Basics & Document Structure": [
+    {
+      id: 1,
+      text: "What does HTML stand for?",
+      options: [
+        "Hyper Text Markup Language",
+        "High Tech Modern Language",
+        "Hybrid Text Making Language",
+        "Home Tool Markup Language"
+      ],
+      correctAnswer: 0
+    },
+    {
+      id: 2,
+      text: "Which tag is used to define the main content of an HTML document?",
+      options: ["<main>", "<body>", "<content>", "<article>"],
+      correctAnswer: 0
+    }
+  ],
+  "CSS Fundamentals": [
+    {
+      id: 1,
+      text: "Which CSS property is used to change text color?",
+      options: ["text-color", "font-color", "color", "text-style"],
+      correctAnswer: 2
+    },
+    {
+      id: 2,
+      text: "What is the correct CSS syntax for making all paragraphs bold?",
+      options: [
+        "p {font-weight: bold;}",
+        "p {text-weight: bold;}",
+        "<p style='font-weight: bold'>",
+        "p.style (bold)"
+      ],
+      correctAnswer: 0
+    }
+  ],
+  "JavaScript Syntax": [
+    {
+      id: 1,
+      text: "Which keyword is used to declare a variable in JavaScript?",
+      options: ["var", "let", "const", "All of the above"],
+      correctAnswer: 3
+    },
+    {
+      id: 2,
+      text: "What is the correct way to write a comment in JavaScript?",
+      options: [
+        "<!-- comment -->",
+        "// comment",
+        "/* comment */",
+        "Both B and C"
+      ],
+      correctAnswer: 3
     }
   ]
 };
