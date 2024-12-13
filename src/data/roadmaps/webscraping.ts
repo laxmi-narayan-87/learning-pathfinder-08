@@ -79,7 +79,7 @@ export const webscrapingRoadmap = {
     {
       title: "Web Scraping with Python",
       url: "https://www.pythonscraping.com/",
-      type: "course" as const
+      type: "tutorial" as const
     },
     {
       title: "Scrapy Documentation",
