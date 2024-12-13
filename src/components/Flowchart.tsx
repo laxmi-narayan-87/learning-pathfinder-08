@@ -187,7 +187,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
 
   return (
     <>
-      <div className="w-full h-[70vh] overflow-hidden bg-black rounded-xl shadow-lg"> {/* Updated height to 70vh and background to black */}
+      <div className="w-full h-[85vh] overflow-hidden bg-black rounded-xl shadow-lg"> {/* Increased height to 85vh */}
         <ReactFlow
           nodes={createNodes()}
           edges={createEdges()}
@@ -211,8 +211,8 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
               return node.data?.type === 'topic' ? '#6366f1' : '#8b5cf6';
             }}
             style={{ 
-              height: 200,
-              width: 300,
+              height: 250, // Increased MiniMap height
+              width: 350, // Increased MiniMap width
               backgroundColor: '#f8fafc',
               borderRadius: '0.5rem',
             }}
