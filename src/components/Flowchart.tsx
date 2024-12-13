@@ -187,7 +187,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
 
   return (
     <>
-      <div className="w-full h-[800px] md:h-[1200px] overflow-hidden bg-white rounded-xl shadow-lg"> {/* Updated height */}
+      <div className="w-full h-[70vh] overflow-hidden bg-black rounded-xl shadow-lg"> {/* Updated height to 70vh and background to black */}
         <ReactFlow
           nodes={createNodes()}
           edges={createEdges()}
@@ -198,7 +198,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
           minZoom={0.2}
           maxZoom={2}
           defaultViewport={{ x: 0, y: 0, zoom: 0.5 }}
-          className="w-full h-full" // Added full width and height
+          className="w-full h-full"
         >
           <Background size={2} gap={20} />
           <Controls 
@@ -211,7 +211,7 @@ export const Flowchart = ({ sections }: FlowchartProps) => {
               return node.data?.type === 'topic' ? '#6366f1' : '#8b5cf6';
             }}
             style={{ 
-              height: 200, // Increased minimap size
+              height: 200,
               width: 300,
               backgroundColor: '#f8fafc',
               borderRadius: '0.5rem',
