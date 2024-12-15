@@ -43,10 +43,10 @@ const Hero = () => {
             Choose your path and start your development journey.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button variant="secondary" size="lg">
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
               View All Roadmaps
             </Button>
-            <Button variant="outline" size="lg" className="text-white border-white hover:bg-white/10">
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
               Join Community
             </Button>
           </div>
