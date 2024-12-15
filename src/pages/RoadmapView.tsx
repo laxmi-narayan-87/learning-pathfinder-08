@@ -161,10 +161,10 @@ const fetchTopCourses = async (topic: string) => {
     },
     {
       id: "3",
-      title: "Modern CSS Masterclass",
-      platform: "Coursera",
-      rating: 4.7,
-      url: "https://coursera.org"
+      title: "CSS for JavaScript Developers",
+      platform: "CSS for JS",
+      rating: 4.9,
+      url: "https://css-for-js.dev"
     }
   ];
 };
