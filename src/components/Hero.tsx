@@ -24,7 +24,7 @@ const Hero = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="outline" className="text-white border-white hover:bg-[#9b87f5] hover:text-white hover:border-[#9b87f5]">
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
               Login
             </Button>
             <Button className="bg-[#F97316] hover:bg-[#f97316]/90 text-white">
