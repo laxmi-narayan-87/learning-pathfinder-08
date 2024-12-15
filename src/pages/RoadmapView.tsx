@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft, BookOpen, Github, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Flowchart } from "@/components/Flowchart";
 import CourseList from "@/components/CourseList";
 import { useQuery } from "@tanstack/react-query";
 import { useUserProgress } from "@/hooks/useUserProgress";
@@ -94,18 +93,11 @@ const RoadmapView = () => {
       </div>
 
       <div className="container mx-auto py-8">
-        <Tabs defaultValue="interactive" className="w-full">
+        <Tabs defaultValue="resources" className="w-full">
           <TabsList className="mb-8">
-            <TabsTrigger value="interactive">Interactive Roadmap</TabsTrigger>
             <TabsTrigger value="resources">Learning Resources</TabsTrigger>
             <TabsTrigger value="preferences">Learning Preferences</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="interactive">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <Flowchart sections={roadmap.sections} />
-            </div>
-          </TabsContent>
 
           <TabsContent value="resources">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -152,7 +144,6 @@ const RoadmapView = () => {
 };
 
 const fetchTopCourses = async (topic: string) => {
-  // Simulated API call - replace with actual implementation
   return [
     {
       id: "1",
