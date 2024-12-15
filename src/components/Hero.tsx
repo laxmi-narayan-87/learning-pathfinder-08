@@ -24,10 +24,12 @@ const Hero = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="outline" className="text-white border-white hover:bg-white/10">
+            <Button variant="outline" className="text-white border-white hover:bg-[#9b87f5] hover:text-white hover:border-[#9b87f5]">
               Login
             </Button>
-            <Button variant="secondary">Sign Up</Button>
+            <Button className="bg-[#F97316] hover:bg-[#f97316]/90 text-white">
+              Sign Up
+            </Button>
           </div>
         </nav>
 
