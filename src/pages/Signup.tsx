@@ -10,25 +10,51 @@ import {
 } from "@/components/ui/card";
 import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { saveUserToSheet } from "@/utils/googleSheets";
 
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    username: '',
+    mobile: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulated signup - replace with actual registration logic
-    setTimeout(() => {
+    try {
+      // Save user data to Google Sheets
+      await saveUserToSheet(formData);
+      
       toast({
         title: "Success!",
         description: "Account created successfully. Please complete your profile.",
       });
       navigate("/profile");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create account. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -48,51 +74,65 @@ const Signup = () => {
               <div className="space-y-2">
                 <Input
                   type="text"
+                  name="firstName"
                   placeholder="First name"
                   required
+                  onChange={handleChange}
                 />
               </div>
               <div className="space-y-2">
                 <Input
                   type="text"
+                  name="lastName"
                   placeholder="Last name"
                   required
+                  onChange={handleChange}
                 />
               </div>
             </div>
             <div className="space-y-2">
               <Input
                 type="email"
+                name="email"
                 placeholder="Email address"
                 required
+                onChange={handleChange}
               />
             </div>
             <div className="space-y-2">
               <Input
                 type="text"
+                name="username"
                 placeholder="Username"
                 required
+                onChange={handleChange}
               />
             </div>
             <div className="space-y-2">
               <Input
                 type="tel"
+                name="mobile"
                 placeholder="Mobile number"
                 required
+                onChange={handleChange}
               />
             </div>
             <div className="space-y-2">
               <Input
                 type="password"
+                name="password"
                 placeholder="Create password"
                 required
+                onChange={handleChange}
               />
             </div>
             <div className="space-y-2">
               <Input
                 type="password"
+                name="confirmPassword"
                 placeholder="Confirm password"
                 required
+                onChange={handleChange}
               />
             </div>
             <Button
