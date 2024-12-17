@@ -8,8 +8,8 @@ export const saveUserToSheet = async (userData: any) => {
     // Get API key from localStorage
     const apiKey = localStorage.getItem('GOOGLE_SHEETS_API_KEY');
     
-    if (!apiKey) {
-      throw new Error('Google Sheets API key not found');
+    if (!apiKey || apiKey === 'YOUR_API_KEY_HERE') {
+      throw new Error('Please set a valid Google Sheets API key');
     }
 
     // Prepare the values to be inserted

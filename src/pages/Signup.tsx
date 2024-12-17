@@ -36,10 +36,20 @@ const Signup = () => {
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+
+    // For demo purposes, set a default API key if not present
+    if (!localStorage.getItem('GOOGLE_SHEETS_API_KEY')) {
+      localStorage.setItem('GOOGLE_SHEETS_API_KEY', 'YOUR_API_KEY_HERE');
+    }
     
     try {
-      // Save user data to Google Sheets
       await saveUserToSheet(formData);
+      
+      // Save user data to localStorage for authentication
+      localStorage.setItem('user', JSON.stringify({
+        ...formData,
+        password: undefined // Don't store password
+      }));
       
       toast({
         title: "Success!",
@@ -47,9 +57,10 @@ const Signup = () => {
       });
       navigate("/profile");
     } catch (error) {
+      console.error('Error during signup:', error);
       toast({
         title: "Error",
-        description: "Failed to create account. Please try again.",
+        description: "Failed to create account. Please ensure you have set your Google Sheets API key.",
         variant: "destructive"
       });
     } finally {
