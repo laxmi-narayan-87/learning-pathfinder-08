@@ -6,9 +6,59 @@ interface RoadmapInput {
   learningStyle: string;
 }
 
+// Demo roadmap for when API key is not available
+const getDemoRoadmap = (input: RoadmapInput) => ({
+  sections: [
+    {
+      title: "Getting Started",
+      topics: [
+        "Basic Concepts",
+        "Development Environment Setup",
+        "Version Control Basics"
+      ]
+    },
+    {
+      title: "Core Skills",
+      topics: [
+        `${input.skillLevel} Level Programming`,
+        "Problem Solving",
+        "Data Structures"
+      ]
+    },
+    {
+      title: "Advanced Topics",
+      topics: [
+        "System Design",
+        "Best Practices",
+        "Industry Standards"
+      ]
+    }
+  ],
+  resources: [
+    {
+      title: "Official Documentation",
+      url: "https://docs.example.com",
+      type: "documentation"
+    },
+    {
+      title: "Interactive Course",
+      url: "https://course.example.com",
+      type: "course"
+    }
+  ]
+});
+
 export const generateRoadmap = async (input: RoadmapInput) => {
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+
+  // If no API key is available, return demo roadmap
+  if (!apiKey) {
+    console.log("No OpenAI API key found, using demo roadmap");
+    return getDemoRoadmap(input);
+  }
+
   const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: apiKey,
   });
 
   const prompt = `Create a detailed learning roadmap for a ${input.skillLevel} level student interested in ${input.careerGoal}. 
@@ -21,9 +71,15 @@ export const generateRoadmap = async (input: RoadmapInput) => {
       messages: [{ role: "user", content: prompt }],
     });
 
-    return JSON.parse(completion.choices[0].message.content || "{}");
+    const content = completion.choices[0].message.content;
+    if (!content) {
+      throw new Error("No content received from OpenAI");
+    }
+
+    return JSON.parse(content);
   } catch (error) {
     console.error("Error generating roadmap:", error);
-    throw error;
+    // Return demo roadmap as fallback
+    return getDemoRoadmap(input);
   }
 };
