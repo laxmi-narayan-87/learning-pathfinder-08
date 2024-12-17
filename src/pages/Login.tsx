@@ -8,12 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -28,6 +22,7 @@ const Login = () => {
     
     // Simulated login - replace with actual authentication logic
     setTimeout(() => {
+      localStorage.setItem('isAuthenticated', 'true');
       toast({
         title: "Success!",
         description: "You have successfully logged in.",
@@ -45,92 +40,33 @@ const Login = () => {
             Welcome back
           </CardTitle>
           <CardDescription className="text-center">
-            Choose your preferred login method
+            Login to access your learning journey
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="email" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="email">Email</TabsTrigger>
-              <TabsTrigger value="mobile">Mobile</TabsTrigger>
-              <TabsTrigger value="username">Username</TabsTrigger>
-            </TabsList>
-            <TabsContent value="email">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    type="email"
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Input
-                    type="password"
-                    placeholder="Enter your password"
-                    required
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-500 hover:bg-blue-600"
-                  disabled={loading}
-                >
-                  {loading ? "Logging in..." : "Login"}
-                </Button>
-              </form>
-            </TabsContent>
-            <TabsContent value="mobile">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    type="tel"
-                    placeholder="Enter your mobile number"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Input
-                    type="password"
-                    placeholder="Enter your password"
-                    required
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-500 hover:bg-blue-600"
-                  disabled={loading}
-                >
-                  {loading ? "Logging in..." : "Login"}
-                </Button>
-              </form>
-            </TabsContent>
-            <TabsContent value="username">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    type="text"
-                    placeholder="Enter your username"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Input
-                    type="password"
-                    placeholder="Enter your password"
-                    required
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-500 hover:bg-blue-600"
-                  disabled={loading}
-                >
-                  {loading ? "Logging in..." : "Login"}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Input
+                type="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-blue-500 hover:bg-blue-600"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </form>
           <div className="mt-4 text-center text-sm">
             Don't have an account?{" "}
             <Link to="/signup" className="text-blue-500 hover:underline">

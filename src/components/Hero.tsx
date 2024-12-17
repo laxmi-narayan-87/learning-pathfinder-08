@@ -2,6 +2,8 @@ import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
+  const isAuthenticated = localStorage.getItem('isAuthenticated');
+
   return (
     <div className="bg-gradient-to-r from-primary to-secondary">
       <div className="container mx-auto">
@@ -24,12 +26,33 @@ const Hero = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
-              Login
-            </Button>
-            <Button className="bg-[#F97316] hover:bg-[#f97316]/90 text-white">
-              Sign Up
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <Link to="/dashboard">
+                  <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
+                    Dashboard
+                  </Button>
+                </Link>
+                <Link to="/profile">
+                  <Button className="bg-[#F97316] hover:bg-[#f97316]/90 text-white">
+                    Profile
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button className="bg-[#F97316] hover:bg-[#f97316]/90 text-white">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </nav>
 
@@ -43,9 +66,11 @@ const Hero = () => {
             Choose your path and start your development journey.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
-              View All Roadmaps
-            </Button>
+            <Link to={isAuthenticated ? "/dashboard" : "/roadmaps"}>
+              <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
+                {isAuthenticated ? "Go to Dashboard" : "View All Roadmaps"}
+              </Button>
+            </Link>
             <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
               Join Community
             </Button>
