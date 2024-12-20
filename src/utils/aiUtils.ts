@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 interface RoadmapInput {
   skillLevel: string;
@@ -49,31 +49,28 @@ const getDemoRoadmap = (input: RoadmapInput) => ({
 });
 
 export const generateRoadmap = async (input: RoadmapInput) => {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   // If no API key is available, return demo roadmap
   if (!apiKey) {
-    console.log("No OpenAI API key found, using demo roadmap");
+    console.log("No Gemini API key found, using demo roadmap");
     return getDemoRoadmap(input);
   }
 
-  const openai = new OpenAI({
-    apiKey: apiKey,
-  });
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
   const prompt = `Create a detailed learning roadmap for a ${input.skillLevel} level student interested in ${input.careerGoal}. 
     They prefer ${input.learningStyle} learning style. 
     Format the response as a JSON object with sections and topics.`;
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [{ role: "user", content: prompt }],
-    });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const content = response.text();
 
-    const content = completion.choices[0].message.content;
     if (!content) {
-      throw new Error("No content received from OpenAI");
+      throw new Error("No content received from Gemini");
     }
 
     return JSON.parse(content);
