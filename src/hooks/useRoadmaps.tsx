@@ -34,11 +34,14 @@ const getRoadmapData = async (id: string): Promise<Roadmap | null> => {
     .single();
 
   if (roadmapData) {
+    // Parse the sections JSON and ensure it matches our Section[] type
+    const parsedSections = roadmapData.sections as Section[];
+    
     return {
       id: roadmapData.id,
       title: roadmapData.title,
       description: roadmapData.description || '',
-      sections: roadmapData.sections,
+      sections: parsedSections,
       resources: [] // Resources will be handled separately
     };
   }
@@ -65,6 +68,13 @@ export const useRoadmaps = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
+      // Transform the dynamic roadmaps to ensure sections are properly typed
+      const transformedDynamicRoadmaps = (dynamicRoadmaps || []).map(roadmap => ({
+        ...roadmap,
+        sections: roadmap.sections as Section[],
+        resources: []
+      }));
+
       const staticRoadmaps = [frontendRoadmap, backendRoadmap, webscrapingRoadmap];
 
       return {
@@ -72,10 +82,10 @@ export const useRoadmaps = () => {
           beginner: {
             title: "Learning Paths",
             description: "Curated roadmaps for different skill levels",
-            roadmaps: [...(dynamicRoadmaps || []), ...staticRoadmaps]
+            roadmaps: [...transformedDynamicRoadmaps, ...staticRoadmaps]
           }
         },
-        roadmaps: [...(dynamicRoadmaps || []), ...staticRoadmaps]
+        roadmaps: [...transformedDynamicRoadmaps, ...staticRoadmaps]
       };
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
