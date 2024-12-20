@@ -50,7 +50,12 @@ const getRoadmapData = async (id: string): Promise<Roadmap | null> => {
     .eq('title', id)
     .order('created_at', { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error fetching roadmap:', error);
+    return null;
+  }
 
   if (roadmapData) {
     const sections = parseSections(roadmapData.sections);
@@ -85,6 +90,20 @@ export const useRoadmaps = () => {
         .from('roadmaps')
         .select('*')
         .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching roadmaps:', error);
+        return {
+          categories: {
+            beginner: {
+              title: "Learning Paths",
+              description: "Curated roadmaps for different skill levels",
+              roadmaps: [frontendRoadmap, backendRoadmap, webscrapingRoadmap]
+            }
+          },
+          roadmaps: [frontendRoadmap, backendRoadmap, webscrapingRoadmap]
+        };
+      }
 
       // Transform and validate the dynamic roadmaps
       const transformedDynamicRoadmaps = (dynamicRoadmaps || []).map(roadmap => ({
