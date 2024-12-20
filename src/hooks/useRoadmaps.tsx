@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { frontendRoadmap } from "../data/roadmaps/frontend";
 import { backendRoadmap } from "../data/roadmaps/backend";
 import { webscrapingRoadmap } from "../data/roadmaps/webscraping";
+import { Json } from "@/integrations/supabase/types";
 
 export interface Resource {
   title: string;
@@ -23,8 +24,26 @@ export interface Roadmap {
   resources: Resource[];
 }
 
+const isSection = (section: unknown): section is Section => {
+  if (typeof section !== 'object' || section === null) return false;
+  const s = section as any;
+  return typeof s.title === 'string' && Array.isArray(s.topics) && 
+         s.topics.every(topic => typeof topic === 'string');
+};
+
+const isSectionArray = (sections: unknown): sections is Section[] => {
+  return Array.isArray(sections) && sections.every(isSection);
+};
+
+const parseSections = (jsonSections: Json): Section[] => {
+  if (!isSectionArray(jsonSections)) {
+    console.error('Invalid sections format:', jsonSections);
+    return [];
+  }
+  return jsonSections;
+};
+
 const getRoadmapData = async (id: string): Promise<Roadmap | null> => {
-  // First try to fetch from Supabase
   const { data: roadmapData, error } = await supabase
     .from('roadmaps')
     .select('*')
@@ -34,14 +53,13 @@ const getRoadmapData = async (id: string): Promise<Roadmap | null> => {
     .single();
 
   if (roadmapData) {
-    // Parse the sections JSON and ensure it matches our Section[] type
-    const parsedSections = roadmapData.sections as Section[];
+    const sections = parseSections(roadmapData.sections);
     
     return {
       id: roadmapData.id,
       title: roadmapData.title,
       description: roadmapData.description || '',
-      sections: parsedSections,
+      sections,
       resources: [] // Resources will be handled separately
     };
   }
@@ -68,10 +86,10 @@ export const useRoadmaps = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      // Transform the dynamic roadmaps to ensure sections are properly typed
+      // Transform and validate the dynamic roadmaps
       const transformedDynamicRoadmaps = (dynamicRoadmaps || []).map(roadmap => ({
         ...roadmap,
-        sections: roadmap.sections as Section[],
+        sections: parseSections(roadmap.sections),
         resources: []
       }));
 
