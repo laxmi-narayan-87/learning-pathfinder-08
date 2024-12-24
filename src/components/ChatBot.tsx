@@ -13,9 +13,25 @@ const generateResponse = (question: string, roadmapsData: any): string => {
   console.log("Generating response for:", question);
   const questionLower = question.toLowerCase();
   
+  // About SkillForge Academy
+  if (questionLower.includes("about") || questionLower.includes("skillforge") || questionLower.includes("academy")) {
+    if (questionLower.includes("mission") || questionLower.includes("purpose")) {
+      return "SkillForge Academy is dedicated to providing comprehensive, community-driven roadmaps and learning resources for developers at all stages of their journey. We believe in making quality education accessible and structured.";
+    }
+    
+    if (questionLower.includes("offer") || questionLower.includes("provide") || questionLower.includes("features")) {
+      return "SkillForge Academy offers:\n- Customized learning paths for different technology stacks\n- Community-driven content and resources\n- Interactive roadmaps with progress tracking\n- Expert-curated learning materials\n- Collaborative learning environment";
+    }
+    
+    if (questionLower.includes("why") || questionLower.includes("benefit") || questionLower.includes("choose")) {
+      return "Here's why you should choose SkillForge Academy:\n1. Structured Learning: Clear, step-by-step paths to master new technologies\n2. Community Support: Learn alongside peers and get help when needed\n3. Updated Content: Stay current with latest industry trends\n4. Progress Tracking: Monitor your learning journey effectively";
+    }
+    
+    return "SkillForge Academy is your premier platform for structured learning paths and developer education. We offer customized roadmaps, community support, and expert-curated content. What specific aspect would you like to know more about?";
+  }
+  
   // Check if the question is about roadmaps
-  if (questionLower.includes("roadmap") || questionLower.includes("learn")) {
-    // Extract the subject from the question
+  if (questionLower.includes("roadmap") || questionLower.includes("learn") || questionLower.includes("path")) {
     const roadmaps = roadmapsData?.roadmaps || [];
     const subjects = roadmaps.map(r => r.title.toLowerCase());
     const matchedSubject = subjects.find(subject => questionLower.includes(subject));
@@ -33,18 +49,30 @@ const generateResponse = (question: string, roadmapsData: any): string => {
         return `Here's a roadmap for ${roadmap.title}:\n${roadmap.description}\n\nTop recommended courses:${coursesList}\n\nWould you like more specific information about any of these courses?`;
       }
     }
+    
+    return "We offer various learning roadmaps tailored to different technology stacks. Each roadmap provides a structured path with curated resources. What specific technology or skill are you interested in learning?";
   }
   
-  // Default responses for other types of questions
+  // Community and Support
+  if (questionLower.includes("community") || questionLower.includes("help") || questionLower.includes("support")) {
+    return "Our community is here to support your learning journey! You can:\n- Connect with fellow learners\n- Get help with technical questions\n- Share your progress and experiences\n- Participate in discussions\n\nWould you like to know more about our community features?";
+  }
+  
+  // Progress Tracking
+  if (questionLower.includes("progress") || questionLower.includes("track") || questionLower.includes("monitor")) {
+    return "SkillForge Academy provides built-in progress tracking features that help you:\n- Monitor your learning journey\n- Set and achieve learning goals\n- Track completion of roadmap sections\n- Visualize your growth\n\nWould you like to know how to start tracking your progress?";
+  }
+  
+  // Default responses
   if (questionLower.includes("hello") || questionLower.includes("hi")) {
-    return "Hello! I can help you find learning roadmaps and courses. What subject are you interested in?";
+    return "Hello! Welcome to SkillForge Academy. I'm here to help you with information about our learning roadmaps, courses, and community. What would you like to know more about?";
   }
   
   if (questionLower.includes("thank")) {
-    return "You're welcome! Let me know if you need any other information about courses or learning paths.";
+    return "You're welcome! Remember, SkillForge Academy is here to support your learning journey. Don't hesitate to ask if you need any other information about our roadmaps, courses, or community features.";
   }
   
-  return "I can help you find learning roadmaps and courses. Try asking about specific subjects like 'data science roadmap' or 'web development courses'.";
+  return "I'm here to help you learn about SkillForge Academy and our learning resources. You can ask about:\n- Our learning roadmaps and courses\n- Community features and support\n- Progress tracking\n- Why choose SkillForge Academy\n\nWhat would you like to know more about?";
 };
 
 const ChatBot = () => {
