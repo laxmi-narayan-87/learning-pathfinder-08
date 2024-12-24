@@ -16,6 +16,40 @@ const Changelog = () => {
           ]
         }
       ]
+    },
+    {
+      date: "2024-03-18",
+      version: "1.0.0",
+      changes: [
+        {
+          title: "Features",
+          items: [
+            "Initial release of SkillForge Academy",
+            "Implemented user authentication system",
+            "Added roadmap creation and viewing functionality",
+            "Integrated AI-powered roadmap generation",
+            "Created responsive dashboard interface"
+          ]
+        },
+        {
+          title: "UI Components",
+          items: [
+            "Implemented Hero component with dynamic navigation",
+            "Added RoadmapCategories component for browsing learning paths",
+            "Created SearchBar component for roadmap discovery",
+            "Integrated AI Roadmap Generator component"
+          ]
+        },
+        {
+          title: "Infrastructure",
+          items: [
+            "Set up Supabase backend integration",
+            "Configured authentication providers",
+            "Implemented database schema for roadmaps",
+            "Added row-level security policies"
+          ]
+        }
+      ]
     }
   ];
 
