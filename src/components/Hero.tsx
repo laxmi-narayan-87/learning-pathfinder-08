@@ -10,7 +10,7 @@ const Hero = () => {
         {/* Navigation */}
         <nav className="flex items-center justify-between py-4 text-white">
           <div className="flex items-center space-x-8">
-            <Link to="/" className="text-xl font-bold">
+            <Link to="/about" className="text-xl font-bold hover:text-white/80 transition-colors">
               SkillForge Academy
             </Link>
             <div className="hidden md:flex space-x-6">
