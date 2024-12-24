@@ -3,6 +3,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const Changelog = () => {
   const changes = [
     {
+      date: "2024-03-20",
+      version: "1.0.2",
+      changes: [
+        {
+          title: "Features",
+          items: [
+            "Added comprehensive changelog page",
+            "Implemented card-based layout for change history",
+            "Added version tracking system",
+            "Integrated date-based organization for updates"
+          ]
+        },
+        {
+          title: "UI Improvements",
+          items: [
+            "Enhanced changelog readability with shadcn/ui components",
+            "Added responsive design for better mobile viewing",
+            "Improved navigation structure"
+          ]
+        }
+      ]
+    },
+    {
       date: "2024-03-19",
       version: "1.0.1",
       changes: [
