@@ -1,78 +1,56 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useNavigate, Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    // Simulated login - replace with actual authentication logic
-    setTimeout(() => {
-      localStorage.setItem('isAuthenticated', 'true');
-      toast({
-        title: "Success!",
-        description: "You have successfully logged in.",
-      });
-      navigate("/dashboard");
-      setLoading(false);
-    }, 1000);
-  };
+  useEffect(() => {
+    // Check if user is already logged in
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN") {
+        toast({
+          title: "Success!",
+          description: "You have successfully logged in.",
+        });
+        navigate("/dashboard");
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => subscription.unsubscribe();
+  }, [navigate, toast]);
 
   return (
     <div className="container flex items-center justify-center min-h-screen py-10">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
+        <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
             Welcome back
           </CardTitle>
-          <CardDescription className="text-center">
-            Login to access your learning journey
-          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Input
-                type="password"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
-            <Button
-              type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600"
-              disabled={loading}
-            >
-              {loading ? "Logging in..." : "Login"}
-            </Button>
-          </form>
-          <div className="mt-4 text-center text-sm">
-            Don't have an account?{" "}
-            <Link to="/signup" className="text-blue-500 hover:underline">
-              Sign up
-            </Link>
-          </div>
+          <Auth
+            supabaseClient={supabase}
+            appearance={{
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    brand: '#2563eb',
+                    brandAccent: '#1d4ed8',
+                  },
+                },
+              },
+            }}
+            providers={[]}
+            redirectTo={window.location.origin}
+          />
         </CardContent>
       </Card>
     </div>
