@@ -10,100 +10,175 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { Label } from "@/components/ui/label";
 
 const Profile = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [basicInfo, setBasicInfo] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    bio: "",
+    location: "",
+    website: "",
+    github: "",
+    linkedin: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setBasicInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleProfileUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulated profile update - replace with actual update logic
-    setTimeout(() => {
+    try {
+      // Simulated profile update - replace with actual update logic
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      
       toast({
         title: "Success!",
         description: "Profile updated successfully.",
       });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
-    <div className="container py-10">
-      <Card className="max-w-2xl mx-auto">
+    <div className="container max-w-4xl py-10">
+      <Card>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Complete Your Profile</CardTitle>
+          <CardTitle className="text-2xl font-bold">Basic Information</CardTitle>
           <CardDescription>
-            Tell us more about yourself to personalize your learning experience
+            Update your personal information and online presence
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleProfileUpdate} className="space-y-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Personal Information</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Date of Birth</label>
-                  <Input type="date" required />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Gender</label>
-                  <select className="w-full h-10 px-3 rounded-md border border-input bg-background">
-                    <option value="">Select gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  value={basicInfo.firstName}
+                  onChange={handleInputChange}
+                  placeholder="John"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  value={basicInfo.lastName}
+                  onChange={handleInputChange}
+                  placeholder="Doe"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={basicInfo.email}
+                  onChange={handleInputChange}
+                  placeholder="john.doe@example.com"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  value={basicInfo.phone}
+                  onChange={handleInputChange}
+                  placeholder="+1 (555) 000-0000"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  name="location"
+                  value={basicInfo.location}
+                  onChange={handleInputChange}
+                  placeholder="City, Country"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="website">Website</Label>
+                <Input
+                  id="website"
+                  name="website"
+                  type="url"
+                  value={basicInfo.website}
+                  onChange={handleInputChange}
+                  placeholder="https://yourwebsite.com"
+                />
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Professional Information</h3>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Current Role</label>
-                <Input type="text" placeholder="e.g., Software Developer" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Experience Level</label>
-                <select className="w-full h-10 px-3 rounded-md border border-input bg-background">
-                  <option value="">Select experience level</option>
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Skills</label>
-                <Input type="text" placeholder="e.g., JavaScript, React, Node.js" />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea
+                id="bio"
+                name="bio"
+                value={basicInfo.bio}
+                onChange={handleInputChange}
+                placeholder="Tell us about yourself..."
+                className="h-32"
+              />
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Learning Preferences</h3>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Learning Goals</label>
-                <Textarea placeholder="What do you want to achieve?" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Preferred Learning Style</label>
-                <select className="w-full h-10 px-3 rounded-md border border-input bg-background">
-                  <option value="">Select learning style</option>
-                  <option value="visual">Visual</option>
-                  <option value="auditory">Auditory</option>
-                  <option value="reading">Reading/Writing</option>
-                  <option value="kinesthetic">Kinesthetic</option>
-                </select>
+              <h3 className="text-lg font-semibold">Social Links</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="github">GitHub</Label>
+                  <Input
+                    id="github"
+                    name="github"
+                    value={basicInfo.github}
+                    onChange={handleInputChange}
+                    placeholder="https://github.com/username"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="linkedin">LinkedIn</Label>
+                  <Input
+                    id="linkedin"
+                    name="linkedin"
+                    value={basicInfo.linkedin}
+                    onChange={handleInputChange}
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                </div>
               </div>
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600"
+              className="w-full"
               disabled={loading}
             >
-              {loading ? "Updating..." : "Update Profile"}
+              {loading ? "Updating..." : "Save Changes"}
             </Button>
           </form>
         </CardContent>
