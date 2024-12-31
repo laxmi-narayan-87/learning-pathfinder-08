@@ -3,6 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { frontendRoadmap } from "../data/roadmaps/frontend";
 import { backendRoadmap } from "../data/roadmaps/backend";
 import { webscrapingRoadmap } from "../data/roadmaps/webscraping";
+import { fullstackRoadmap } from "../data/roadmaps/fullstack";
+import { devopsRoadmap } from "../data/roadmaps/devops";
+import { mobileRoadmap } from "../data/roadmaps/mobile";
 import { Json } from "@/integrations/supabase/types";
 
 export interface Resource {
@@ -81,6 +84,12 @@ const getRoadmapData = async (id: string): Promise<Roadmap | null> => {
         return backendRoadmap;
       case "webscraping":
         return webscrapingRoadmap;
+      case "fullstack":
+        return fullstackRoadmap;
+      case "devops":
+        return devopsRoadmap;
+      case "mobile":
+        return mobileRoadmap;
       default:
         console.log('No static roadmap found for:', id);
         return null;
@@ -114,7 +123,14 @@ export const useRoadmaps = () => {
           resources: []
         }));
 
-        const staticRoadmaps = [frontendRoadmap, backendRoadmap, webscrapingRoadmap];
+        const staticRoadmaps = [
+          frontendRoadmap,
+          backendRoadmap,
+          webscrapingRoadmap,
+          fullstackRoadmap,
+          devopsRoadmap,
+          mobileRoadmap
+        ];
 
         return {
           categories: {
