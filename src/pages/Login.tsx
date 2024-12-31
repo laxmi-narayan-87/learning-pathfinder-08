@@ -19,6 +19,12 @@ const Login = () => {
           description: "You have successfully logged in.",
         });
         navigate("/dashboard");
+      } else if (event === "SIGNED_OUT") {
+        toast({
+          variant: "destructive",
+          title: "Signed out",
+          description: "You have been signed out.",
+        });
       }
     });
 
@@ -49,7 +55,14 @@ const Login = () => {
               },
             }}
             providers={[]}
-            redirectTo={window.location.origin}
+            redirectTo={`${window.location.origin}/dashboard`}
+            onError={(error) => {
+              toast({
+                variant: "destructive",
+                title: "Error",
+                description: error.message,
+              });
+            }}
           />
         </CardContent>
       </Card>
