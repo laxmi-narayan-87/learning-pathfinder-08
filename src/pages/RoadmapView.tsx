@@ -14,7 +14,7 @@ const RoadmapView = () => {
   const { data: roadmap, isLoading, error, refetch } = useRoadmap(id || "");
   const { progress, preferences, updatePreferences } = useUserProgress();
   const { toast } = useToast();
-  
+
   const { data: topCourses } = useQuery({
     queryKey: ["courses", id],
     queryFn: () => fetchTopCourses(id || ""),
@@ -113,6 +113,32 @@ const RoadmapView = () => {
 };
 
 const fetchTopCourses = async (topic: string) => {
+  if (topic === "devops") {
+    return [
+      {
+        id: "1",
+        title: "DevOps Engineering Course",
+        platform: "Udemy",
+        rating: 4.8,
+        url: "https://udemy.com/devops-engineering"
+      },
+      {
+        id: "2",
+        title: "Docker and Kubernetes: The Complete Guide",
+        platform: "Udemy",
+        rating: 4.9,
+        url: "https://udemy.com/docker-kubernetes"
+      },
+      {
+        id: "3",
+        title: "AWS Certified DevOps Engineer",
+        platform: "A Cloud Guru",
+        rating: 4.9,
+        url: "https://acloudguru.com/aws-devops"
+      }
+    ];
+  }
+  // Return default courses for other topics
   return [
     {
       id: "1",
