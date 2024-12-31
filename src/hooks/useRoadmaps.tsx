@@ -44,41 +44,50 @@ const parseSections = (jsonSections: Json): Section[] => {
 };
 
 const getRoadmapData = async (id: string): Promise<Roadmap | null> => {
-  const { data: roadmapData, error } = await supabase
-    .from('roadmaps')
-    .select('*')
-    .eq('title', id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  try {
+    console.log('Fetching roadmap data for:', id);
+    const { data: roadmapData, error } = await supabase
+      .from('roadmaps')
+      .select('*')
+      .eq('title', id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-  if (error) {
-    console.error('Error fetching roadmap:', error);
-    return null;
-  }
+    if (error) {
+      console.error('Supabase error fetching roadmap:', error);
+      throw error;
+    }
 
-  if (roadmapData) {
-    const sections = parseSections(roadmapData.sections);
-    
-    return {
-      id: roadmapData.id,
-      title: roadmapData.title,
-      description: roadmapData.description || '',
-      sections,
-      resources: [] // Resources will be handled separately
-    };
-  }
+    if (roadmapData) {
+      console.log('Found roadmap data:', roadmapData);
+      const sections = parseSections(roadmapData.sections);
+      
+      return {
+        id: roadmapData.id,
+        title: roadmapData.title,
+        description: roadmapData.description || '',
+        sections,
+        resources: []
+      };
+    }
 
-  // Fallback to static data if no dynamic roadmap exists
-  switch (id) {
-    case "frontend":
-      return frontendRoadmap;
-    case "backend":
-      return backendRoadmap;
-    case "webscraping":
-      return webscrapingRoadmap;
-    default:
-      return null;
+    // Fallback to static data if no dynamic roadmap exists
+    console.log('No dynamic roadmap found, falling back to static data');
+    switch (id) {
+      case "frontend":
+        return frontendRoadmap;
+      case "backend":
+        return backendRoadmap;
+      case "webscraping":
+        return webscrapingRoadmap;
+      default:
+        console.log('No static roadmap found for:', id);
+        return null;
+    }
+  } catch (error) {
+    console.error('Error in getRoadmapData:', error);
+    throw error;
   }
 };
 
@@ -86,44 +95,41 @@ export const useRoadmaps = () => {
   return useQuery({
     queryKey: ["roadmaps"],
     queryFn: async () => {
-      const { data: dynamicRoadmaps, error } = await supabase
-        .from('roadmaps')
-        .select('*')
-        .order('created_at', { ascending: false });
+      try {
+        console.log('Fetching all roadmaps');
+        const { data: dynamicRoadmaps, error } = await supabase
+          .from('roadmaps')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching roadmaps:', error);
+        if (error) {
+          console.error('Error fetching roadmaps:', error);
+          throw error;
+        }
+
+        // Transform and validate the dynamic roadmaps
+        const transformedDynamicRoadmaps = (dynamicRoadmaps || []).map(roadmap => ({
+          ...roadmap,
+          sections: parseSections(roadmap.sections),
+          resources: []
+        }));
+
+        const staticRoadmaps = [frontendRoadmap, backendRoadmap, webscrapingRoadmap];
+
         return {
           categories: {
             beginner: {
               title: "Learning Paths",
               description: "Curated roadmaps for different skill levels",
-              roadmaps: [frontendRoadmap, backendRoadmap, webscrapingRoadmap]
+              roadmaps: [...transformedDynamicRoadmaps, ...staticRoadmaps]
             }
           },
-          roadmaps: [frontendRoadmap, backendRoadmap, webscrapingRoadmap]
+          roadmaps: [...transformedDynamicRoadmaps, ...staticRoadmaps]
         };
+      } catch (error) {
+        console.error('Error in useRoadmaps:', error);
+        throw error;
       }
-
-      // Transform and validate the dynamic roadmaps
-      const transformedDynamicRoadmaps = (dynamicRoadmaps || []).map(roadmap => ({
-        ...roadmap,
-        sections: parseSections(roadmap.sections),
-        resources: []
-      }));
-
-      const staticRoadmaps = [frontendRoadmap, backendRoadmap, webscrapingRoadmap];
-
-      return {
-        categories: {
-          beginner: {
-            title: "Learning Paths",
-            description: "Curated roadmaps for different skill levels",
-            roadmaps: [...transformedDynamicRoadmaps, ...staticRoadmaps]
-          }
-        },
-        roadmaps: [...transformedDynamicRoadmaps, ...staticRoadmaps]
-      };
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -140,5 +146,6 @@ export const useRoadmap = (id: string) => {
       return roadmap;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 1, // Only retry once if the request fails
   });
 };
