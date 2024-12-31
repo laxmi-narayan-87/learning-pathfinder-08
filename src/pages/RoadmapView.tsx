@@ -138,6 +138,33 @@ const fetchTopCourses = async (topic: string) => {
       }
     ];
   }
+  
+  if (topic === "mobile") {
+    return [
+      {
+        id: "1",
+        title: "React Native - The Practical Guide",
+        platform: "Udemy",
+        rating: 4.8,
+        url: "https://udemy.com/react-native-practical"
+      },
+      {
+        id: "2",
+        title: "Flutter & Dart - The Complete Guide",
+        platform: "Academind",
+        rating: 4.9,
+        url: "https://academind.com/flutter-complete"
+      },
+      {
+        id: "3",
+        title: "iOS & Swift - The Complete iOS App Development Bootcamp",
+        platform: "App Brewery",
+        rating: 4.9,
+        url: "https://appbrewery.com/ios-development"
+      }
+    ];
+  }
+
   // Return default courses for other topics
   return [
     {
