@@ -25,7 +25,7 @@ const Login = () => {
           title: "Signed out",
           description: "You have been signed out.",
         });
-      } else if (event === "USER_DELETED" || event === "PASSWORD_RECOVERY") {
+      } else if (event === "PASSWORD_RECOVERY") {
         toast({
           variant: "destructive",
           title: "Authentication Error",
