@@ -4,7 +4,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,6 +24,12 @@ const Login = () => {
           variant: "destructive",
           title: "Signed out",
           description: "You have been signed out.",
+        });
+      } else if (event === "USER_DELETED" || event === "PASSWORD_RECOVERY") {
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: "There was an error with authentication.",
         });
       }
     });
@@ -56,13 +62,6 @@ const Login = () => {
             }}
             providers={[]}
             redirectTo={`${window.location.origin}/dashboard`}
-            onError={(error) => {
-              toast({
-                variant: "destructive",
-                title: "Error",
-                description: error.message,
-              });
-            }}
           />
         </CardContent>
       </Card>
