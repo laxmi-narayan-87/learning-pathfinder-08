@@ -93,14 +93,11 @@ const Hero = () => {
               Choose your path and start your development journey.
             </p>
             <div className="flex justify-center space-x-4">
-              <Link to={isAuthenticated ? "/dashboard" : "/roadmaps"}>
+              <Link to="/roadmaps">
                 <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
-                  {isAuthenticated ? "Go to Dashboard" : "View All Roadmaps"}
+                  View All Roadmaps
                 </Button>
               </Link>
-              <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
-                Join Community
-              </Button>
             </div>
           </div>
           
