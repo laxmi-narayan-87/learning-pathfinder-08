@@ -46,6 +46,9 @@ const Login = () => {
         case "invalid_grant":
           setError("Invalid login credentials. Please check your email and password.");
           break;
+        case "validation_failed":
+          setError("Please enter both email and password to sign in.");
+          break;
         default:
           setError(error.message || "An error occurred during authentication.");
       }
