@@ -41,6 +41,12 @@ const Login = () => {
       case "Email not confirmed":
         setError("Please verify your email address before signing in.");
         break;
+      case "Email signups are disabled":
+        setError("Email sign up is currently disabled. Please contact the administrator.");
+        break;
+      case "Email logins are disabled":
+        setError("Email login is currently disabled. Please contact the administrator.");
+        break;
       default:
         setError(error.message);
     }
