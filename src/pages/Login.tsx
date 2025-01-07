@@ -16,11 +16,9 @@ const Login = () => {
       if (event === "SIGNED_IN") {
         navigate("/dashboard");
       }
-      // Clear error when auth state changes
       if (event === "SIGNED_OUT") {
         setError("");
       }
-      // Handle auth errors
       if (event === "USER_UPDATED") {
         supabase.auth.getSession().then(({ error }) => {
           if (error) {
@@ -46,13 +44,13 @@ const Login = () => {
           setError("Email sign up is currently disabled. Please contact the administrator.");
           break;
         case "invalid_grant":
-          setError("Invalid login credentials.");
+          setError("Invalid login credentials. Please check your email and password.");
           break;
         default:
-          setError(error.message);
+          setError(error.message || "An error occurred during authentication.");
       }
     } else {
-      setError(error.message);
+      setError(error.message || "An unexpected error occurred.");
     }
   };
 
