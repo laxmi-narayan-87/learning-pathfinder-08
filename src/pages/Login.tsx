@@ -20,6 +20,14 @@ const Login = () => {
       if (event === "SIGNED_OUT") {
         setError("");
       }
+      // Handle auth errors
+      if (event === "USER_UPDATED") {
+        supabase.auth.getSession().then(({ error }) => {
+          if (error) {
+            handleAuthError(error);
+          }
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -65,7 +73,6 @@ const Login = () => {
             }}
             providers={[]}
             redirectTo={`${window.location.origin}/dashboard`}
-            onError={(error) => handleAuthError(error)}
           />
         </CardContent>
       </Card>
