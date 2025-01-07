@@ -1,8 +1,22 @@
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Hero = () => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
     <div className="relative bg-gradient-to-r from-primary to-secondary">
@@ -48,13 +62,22 @@ const Hero = () => {
                     Profile
                   </Button>
                 </Link>
+                <Button 
+                  onClick={handleSignOut}
+                  variant="outline"
+                  className="text-white border-white hover:bg-white/10"
+                >
+                  Sign Out
+                </Button>
               </>
             ) : (
-              <Link to="/roadmaps">
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
-                  View All Roadmaps
-                </Button>
-              </Link>
+              <>
+                <Link to="/login">
+                  <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
+                    Sign In
+                  </Button>
+                </Link>
+              </>
             )}
           </div>
         </nav>
