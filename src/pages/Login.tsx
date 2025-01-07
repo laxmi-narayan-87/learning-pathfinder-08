@@ -5,7 +5,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AuthError } from "@supabase/supabase-js";
+import { AuthError, AuthApiError } from "@supabase/supabase-js";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -34,21 +34,25 @@ const Login = () => {
   }, [navigate]);
 
   const handleAuthError = (error: AuthError) => {
-    switch (error.message) {
-      case "Invalid login credentials":
-        setError("Invalid email or password. Please check your credentials and try again.");
-        break;
-      case "Email not confirmed":
-        setError("Please verify your email address before signing in.");
-        break;
-      case "Email signups are disabled":
-        setError("Email sign up is currently disabled. Please contact the administrator.");
-        break;
-      case "Email logins are disabled":
-        setError("Email login is currently disabled. Please contact the administrator.");
-        break;
-      default:
-        setError(error.message);
+    if (error instanceof AuthApiError) {
+      switch (error.code) {
+        case "invalid_credentials":
+          setError("Invalid email or password. Please check your credentials and try again.");
+          break;
+        case "email_not_confirmed":
+          setError("Please verify your email address before signing in.");
+          break;
+        case "email_provider_disabled":
+          setError("Email sign up is currently disabled. Please contact the administrator.");
+          break;
+        case "invalid_grant":
+          setError("Invalid login credentials.");
+          break;
+        default:
+          setError(error.message);
+      }
+    } else {
+      setError(error.message);
     }
   };
 
