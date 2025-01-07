@@ -6,10 +6,38 @@ import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AuthError, AuthApiError } from "@supabase/supabase-js";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const formSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 const Login = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -32,28 +60,41 @@ const Login = () => {
   }, [navigate]);
 
   const handleAuthError = (error: AuthError) => {
+    setIsLoading(false);
     if (error instanceof AuthApiError) {
       switch (error.code) {
         case "invalid_credentials":
-          setError("Invalid email or password. Please check your credentials and try again.");
+          setError("Invalid email or password. Please check your credentials.");
           break;
         case "email_not_confirmed":
           setError("Please verify your email address before signing in.");
           break;
-        case "email_provider_disabled":
-          setError("Email sign up is currently disabled. Please contact the administrator.");
+        case "validation_failed":
+          setError("Please enter both email and password to sign in.");
           break;
         case "invalid_grant":
           setError("Invalid login credentials. Please check your email and password.");
-          break;
-        case "validation_failed":
-          setError("Please enter both email and password to sign in.");
           break;
         default:
           setError(error.message || "An error occurred during authentication.");
       }
     } else {
       setError(error.message || "An unexpected error occurred.");
+    }
+  };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
+    setError("");
+    
+    const { error } = await supabase.auth.signInWithPassword({
+      email: values.email,
+      password: values.password,
+    });
+
+    if (error) {
+      handleAuthError(error);
+      return;
     }
   };
 
@@ -69,22 +110,51 @@ const Login = () => {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          <Auth
-            supabaseClient={supabase}
-            appearance={{
-              theme: ThemeSupa,
-              variables: {
-                default: {
-                  colors: {
-                    brand: '#2563eb',
-                    brandAccent: '#1d4ed8',
-                  },
-                },
-              },
-            }}
-            providers={[]}
-            redirectTo={`${window.location.origin}/dashboard`}
-          />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="email" 
+                        placeholder="Enter your email"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="password" 
+                        placeholder="Enter your password"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : "Sign In"}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
