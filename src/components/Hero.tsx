@@ -50,18 +50,11 @@ const Hero = () => {
                 </Link>
               </>
             ) : (
-              <>
-                <Link to="/login">
-                  <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/signup">
-                  <Button className="bg-[#F97316] hover:bg-[#f97316]/90 text-white">
-                    Sign Up
-                  </Button>
-                </Link>
-              </>
+              <Link to="/roadmaps">
+                <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
+                  View All Roadmaps
+                </Button>
+              </Link>
             )}
           </div>
         </nav>
