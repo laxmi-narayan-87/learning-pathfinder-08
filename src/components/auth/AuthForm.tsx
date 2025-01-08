@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Form,
   FormControl,
@@ -11,21 +10,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-const formSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
+import { authFormSchema, type AuthFormValues } from "@/schemas/authSchema";
 
 type AuthFormProps = {
-  onSubmit: (values: z.infer<typeof formSchema>) => void;
+  onSubmit: (values: AuthFormValues) => void;
   isLoading: boolean;
   mode: "login" | "signup";
 };
 
 export const AuthForm = ({ onSubmit, isLoading, mode }: AuthFormProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<AuthFormValues>({
+    resolver: zodResolver(authFormSchema),
     defaultValues: {
       email: "",
       password: "",
