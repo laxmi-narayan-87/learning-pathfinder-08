@@ -9,6 +9,13 @@ import { getAuthErrorMessage } from "@/utils/authErrors";
 import type { AuthError } from "@supabase/supabase-js";
 import * as z from "zod";
 
+const formSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
 const Login = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string>("");
@@ -36,7 +43,7 @@ const Login = () => {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof z.object({ email: z.string(), password: z.string() })>) => {
+  const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     setError("");
     
