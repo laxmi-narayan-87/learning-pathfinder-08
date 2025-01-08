@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Changelog from "./pages/Changelog";
 import About from "./pages/About";
 import Login from "./pages/Login";
+import Roadmaps from "./pages/Roadmaps";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
+          <Route path="/roadmaps" element={<Roadmaps />} />
           <Route path="/roadmap/:id" element={<RoadmapView />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/dashboard" element={<Dashboard />} />
