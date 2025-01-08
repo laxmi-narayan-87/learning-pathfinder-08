@@ -14,10 +14,6 @@ const Hero = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-  };
-
   return (
     <div className="relative bg-gradient-to-r from-primary to-secondary">
       {/* Background Image */}
@@ -51,28 +47,17 @@ const Hero = () => {
           </div>
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
-              <>
-                <Link to="/profile">
-                  <Button className="bg-[#F97316] hover:bg-[#f97316]/90 text-white">
-                    Profile
-                  </Button>
-                </Link>
-                <Button 
-                  onClick={handleSignOut}
-                  variant="outline"
-                  className="text-white border-white hover:bg-white/10"
-                >
-                  Sign Out
+              <Link to="/profile">
+                <Button className="bg-[#F97316] hover:bg-[#f97316]/90 text-white">
+                  Profile
                 </Button>
-              </>
+              </Link>
             ) : (
-              <>
-                <Link to="/login">
-                  <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
-                    Sign In
-                  </Button>
-                </Link>
-              </>
+              <Link to="/login">
+                <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
+                  Sign In
+                </Button>
+              </Link>
             )}
           </div>
         </nav>

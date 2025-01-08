@@ -11,9 +11,12 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [basicInfo, setBasicInfo] = useState({
     firstName: "",
@@ -33,6 +36,15 @@ const Profile = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+    toast({
+      title: "Signed out successfully",
+      description: "You have been logged out of your account.",
+    });
   };
 
   const handleProfileUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -60,6 +72,15 @@ const Profile = () => {
 
   return (
     <div className="container max-w-4xl py-10">
+      <div className="flex justify-end mb-6">
+        <Button 
+          onClick={handleSignOut}
+          variant="outline"
+          className="bg-red-500 text-white hover:bg-red-600 border-none"
+        >
+          Sign Out
+        </Button>
+      </div>
       <Card>
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Basic Information</CardTitle>
