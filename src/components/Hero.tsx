@@ -52,11 +52,6 @@ const Hero = () => {
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
               <>
-                <Link to="/dashboard">
-                  <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
-                    Dashboard
-                  </Button>
-                </Link>
                 <Link to="/profile">
                   <Button className="bg-[#F97316] hover:bg-[#f97316]/90 text-white">
                     Profile
