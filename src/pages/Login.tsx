@@ -60,7 +60,12 @@ const Login = () => {
           }
           break;
         case 422:
-          setError("Please enter both email and password.");
+          if (error.message.includes("User already registered")) {
+            setError("This email is already registered. Please try logging in instead.");
+            setActiveTab("login");
+          } else {
+            setError("Please enter both email and password.");
+          }
           break;
         default:
           setError(error.message);
