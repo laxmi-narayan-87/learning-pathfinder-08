@@ -4,18 +4,41 @@ import SearchBar from "../components/SearchBar";
 import AIRoadmapGenerator from "../components/AIRoadmapGenerator";
 import { useUserProgress } from "@/hooks/useUserProgress";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const { preferences } = useUserProgress();
   const [generatedRoadmap, setGeneratedRoadmap] = useState(null);
+  const { toast } = useToast();
 
   const handleRoadmapGenerated = (roadmap: any) => {
     setGeneratedRoadmap(roadmap);
-    // You can add additional logic here to save the roadmap or update the UI
+  };
+
+  const handleRefresh = () => {
+    window.location.reload();
+    toast({
+      title: "Page refreshed",
+      description: "The content has been updated.",
+      duration: 2000,
+    });
   };
 
   return (
     <div className="min-h-screen">
+      <div className="fixed top-4 right-4 z-50">
+        <Button
+          onClick={handleRefresh}
+          variant="outline"
+          size="icon"
+          className="rounded-full shadow-md hover:shadow-lg"
+        >
+          <RefreshCw className="h-4 w-4" />
+        </Button>
+      </div>
+      
       <Hero />
       
       <main>
