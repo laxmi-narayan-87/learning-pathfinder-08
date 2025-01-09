@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { useToast } from "./ui/use-toast";
 import { Card } from "./ui/card";
 import { Loader2 } from "lucide-react";
 import { generateRoadmap } from "@/utils/aiUtils";
 import { UserPreferences } from "@/types/user";
-import { useNavigate } from "react-router-dom";
+import { useRoadmapNavigation } from "@/hooks/useRoadmapNavigation";
+import SkillLevelSection from "./roadmap-generator/SkillLevelSection";
+import LearningStyleSection from "./roadmap-generator/LearningStyleSection";
+import CareerGoalSection from "./roadmap-generator/CareerGoalSection";
 
 interface AIRoadmapGeneratorProps {
   onRoadmapGenerated: (roadmap: any) => void;
@@ -16,8 +15,7 @@ interface AIRoadmapGeneratorProps {
 }
 
 const AIRoadmapGenerator = ({ onRoadmapGenerated, initialPreferences }: AIRoadmapGeneratorProps) => {
-  const { toast } = useToast();
-  const navigate = useNavigate();
+  const { navigateToRoadmap } = useRoadmapNavigation();
   const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
     skillLevel: "beginner",
@@ -32,36 +30,9 @@ const AIRoadmapGenerator = ({ onRoadmapGenerated, initialPreferences }: AIRoadma
     try {
       const roadmap = await generateRoadmap(formData);
       onRoadmapGenerated(roadmap);
-      
-      // Determine which roadmap to navigate to based on career goal
-      const careerGoal = formData.careerGoal.toLowerCase();
-      let roadmapId = 'frontend'; // default roadmap
-
-      if (careerGoal.includes('backend') || careerGoal.includes('server')) {
-        roadmapId = 'backend';
-      } else if (careerGoal.includes('full stack') || careerGoal.includes('fullstack')) {
-        roadmapId = 'fullstack';
-      } else if (careerGoal.includes('mobile') || careerGoal.includes('app')) {
-        roadmapId = 'mobile';
-      } else if (careerGoal.includes('devops') || careerGoal.includes('cloud')) {
-        roadmapId = 'devops';
-      } else if (careerGoal.includes('scraping') || careerGoal.includes('automation')) {
-        roadmapId = 'webscraping';
-      }
-
-      toast({
-        title: "Roadmap Generated!",
-        description: "Navigating to your personalized learning path...",
-      });
-
-      // Navigate to the appropriate roadmap
-      navigate(`/roadmap/${roadmapId}`);
+      navigateToRoadmap(formData.careerGoal);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to generate roadmap. Please try again.",
-        variant: "destructive",
-      });
+      console.error('Error generating roadmap:', error);
     } finally {
       setIsGenerating(false);
     }
@@ -70,64 +41,20 @@ const AIRoadmapGenerator = ({ onRoadmapGenerated, initialPreferences }: AIRoadma
   return (
     <Card className="p-6">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Skill Level</h3>
-          <RadioGroup
-            value={formData.skillLevel}
-            onValueChange={(value) =>
-              setFormData({ ...formData, skillLevel: value })
-            }
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="beginner" id="beginner" />
-              <Label htmlFor="beginner">Beginner</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="intermediate" id="intermediate" />
-              <Label htmlFor="intermediate">Intermediate</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="advanced" id="advanced" />
-              <Label htmlFor="advanced">Advanced</Label>
-            </div>
-          </RadioGroup>
-        </div>
+        <SkillLevelSection
+          value={formData.skillLevel}
+          onChange={(value) => setFormData({ ...formData, skillLevel: value })}
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="careerGoal">Career Goal</Label>
-          <Textarea
-            id="careerGoal"
-            placeholder="Describe your career goals and what you want to learn..."
-            value={formData.careerGoal}
-            onChange={(e) =>
-              setFormData({ ...formData, careerGoal: e.target.value })
-            }
-            className="min-h-[100px]"
-          />
-        </div>
+        <CareerGoalSection
+          value={formData.careerGoal}
+          onChange={(value) => setFormData({ ...formData, careerGoal: value })}
+        />
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Learning Style</h3>
-          <RadioGroup
-            value={formData.learningStyle}
-            onValueChange={(value: "visual" | "practical" | "theoretical") =>
-              setFormData({ ...formData, learningStyle: value })
-            }
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="visual" id="visual" />
-              <Label htmlFor="visual">Visual Learning</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="practical" id="practical" />
-              <Label htmlFor="practical">Practical Projects</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="theoretical" id="theoretical" />
-              <Label htmlFor="theoretical">Theoretical Study</Label>
-            </div>
-          </RadioGroup>
-        </div>
+        <LearningStyleSection
+          value={formData.learningStyle as "visual" | "practical" | "theoretical"}
+          onChange={(value) => setFormData({ ...formData, learningStyle: value })}
+        />
 
         <Button type="submit" disabled={isGenerating} className="w-full">
           {isGenerating ? (
