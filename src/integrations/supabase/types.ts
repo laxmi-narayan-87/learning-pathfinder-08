@@ -57,6 +57,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_progress: {
+        Row: {
+          completed_topics: string[] | null
+          created_at: string
+          id: string
+          roadmap_id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          completed_topics?: string[] | null
+          created_at?: string
+          id?: string
+          roadmap_id: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          completed_topics?: string[] | null
+          created_at?: string
+          id?: string
+          roadmap_id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
