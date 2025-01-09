@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { generateRoadmap } from "@/utils/aiUtils";
 import { UserPreferences } from "@/types/user";
 import { useRoadmapNavigation } from "@/hooks/useRoadmapNavigation";
+import { useToast } from "@/hooks/use-toast";
 import SkillLevelSection from "./roadmap-generator/SkillLevelSection";
 import LearningStyleSection from "./roadmap-generator/LearningStyleSection";
 import CareerGoalSection from "./roadmap-generator/CareerGoalSection";
@@ -16,6 +17,7 @@ interface AIRoadmapGeneratorProps {
 
 const AIRoadmapGenerator = ({ onRoadmapGenerated, initialPreferences }: AIRoadmapGeneratorProps) => {
   const { navigateToRoadmap } = useRoadmapNavigation();
+  const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
     skillLevel: "beginner",
@@ -30,9 +32,21 @@ const AIRoadmapGenerator = ({ onRoadmapGenerated, initialPreferences }: AIRoadma
     try {
       const roadmap = await generateRoadmap(formData);
       onRoadmapGenerated(roadmap);
+      
+      toast({
+        title: "Roadmap Generated! 🎉",
+        description: "Your personalized learning path has been generated.",
+        duration: 5000,
+      });
+      
       navigateToRoadmap(formData.careerGoal);
     } catch (error) {
       console.error('Error generating roadmap:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate roadmap. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsGenerating(false);
     }
