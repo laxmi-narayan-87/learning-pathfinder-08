@@ -8,6 +8,7 @@ import { Card } from "./ui/card";
 import { Loader2 } from "lucide-react";
 import { generateRoadmap } from "@/utils/aiUtils";
 import { UserPreferences } from "@/types/user";
+import { useNavigate } from "react-router-dom";
 
 interface AIRoadmapGeneratorProps {
   onRoadmapGenerated: (roadmap: any) => void;
@@ -16,6 +17,7 @@ interface AIRoadmapGeneratorProps {
 
 const AIRoadmapGenerator = ({ onRoadmapGenerated, initialPreferences }: AIRoadmapGeneratorProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
     skillLevel: "beginner",
@@ -30,10 +32,30 @@ const AIRoadmapGenerator = ({ onRoadmapGenerated, initialPreferences }: AIRoadma
     try {
       const roadmap = await generateRoadmap(formData);
       onRoadmapGenerated(roadmap);
+      
+      // Determine which roadmap to navigate to based on career goal
+      const careerGoal = formData.careerGoal.toLowerCase();
+      let roadmapId = 'frontend'; // default roadmap
+
+      if (careerGoal.includes('backend') || careerGoal.includes('server')) {
+        roadmapId = 'backend';
+      } else if (careerGoal.includes('full stack') || careerGoal.includes('fullstack')) {
+        roadmapId = 'fullstack';
+      } else if (careerGoal.includes('mobile') || careerGoal.includes('app')) {
+        roadmapId = 'mobile';
+      } else if (careerGoal.includes('devops') || careerGoal.includes('cloud')) {
+        roadmapId = 'devops';
+      } else if (careerGoal.includes('scraping') || careerGoal.includes('automation')) {
+        roadmapId = 'webscraping';
+      }
+
       toast({
         title: "Roadmap Generated!",
-        description: "Your personalized learning path is ready.",
+        description: "Navigating to your personalized learning path...",
       });
+
+      // Navigate to the appropriate roadmap
+      navigate(`/roadmap/${roadmapId}`);
     } catch (error) {
       toast({
         title: "Error",
