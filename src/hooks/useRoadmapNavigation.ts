@@ -1,32 +1,34 @@
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from 'react-router-dom';
 
 export const useRoadmapNavigation = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const navigateToRoadmap = (careerGoal: string) => {
-    const goal = careerGoal.toLowerCase();
-    let roadmapId = 'frontend'; // default roadmap
+    // Convert career goal to a valid roadmap path
+    const roadmapPath = careerGoal.toLowerCase()
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/[^a-z0-9-]/g, ''); // Remove special characters
 
-    if (goal.includes('backend') || goal.includes('server')) {
-      roadmapId = 'backend';
-    } else if (goal.includes('full stack') || goal.includes('fullstack')) {
-      roadmapId = 'fullstack';
-    } else if (goal.includes('mobile') || goal.includes('app')) {
-      roadmapId = 'mobile';
-    } else if (goal.includes('devops') || goal.includes('cloud')) {
-      roadmapId = 'devops';
-    } else if (goal.includes('scraping') || goal.includes('automation')) {
-      roadmapId = 'webscraping';
-    }
+    // Map common career goals to predefined roadmap paths
+    const roadmapMapping: { [key: string]: string } = {
+      'frontend': 'frontend',
+      'frontend-development': 'frontend',
+      'backend': 'backend',
+      'backend-development': 'backend',
+      'fullstack': 'fullstack',
+      'full-stack': 'fullstack',
+      'full-stack-development': 'fullstack',
+      'devops': 'devops',
+      'mobile': 'mobile',
+      'mobile-development': 'mobile',
+      'web-scraping': 'webscraping',
+    };
 
-    toast({
-      title: "Roadmap Generated!",
-      description: "Navigating to your personalized learning path...",
-    });
-
-    navigate(`/roadmap/${roadmapId}`);
+    // Use mapped path or fallback to frontend
+    const finalPath = roadmapMapping[roadmapPath] || 'frontend';
+    
+    // Navigate to the roadmap view with the determined path
+    navigate(`/roadmap/${finalPath}`);
   };
 
   return { navigateToRoadmap };
