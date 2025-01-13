@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { Send } from "lucide-react";
+import { Send, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { useRoadmaps } from "@/hooks/useRoadmaps";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Message {
   text: string;
@@ -119,6 +120,7 @@ const ChatBot = () => {
   const [input, setInput] = useState("");
   const { data: roadmapsData } = useRoadmaps();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -145,8 +147,34 @@ const ChatBot = () => {
     setMessages(prev => [...prev, botMessage]);
   };
 
+  const handleRefresh = () => {
+    setMessages([
+      {
+        text: "Hello! I'm your SkillForge Academy assistant. How can I help you today?",
+        isUser: false,
+        image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
+      }
+    ]);
+    toast({
+      title: "Chat Refreshed",
+      description: "The chat history has been cleared.",
+    });
+  };
+
   return (
     <div className="flex flex-col h-[600px] w-full max-w-2xl mx-auto border rounded-lg overflow-hidden bg-white">
+      <div className="flex justify-end p-2 border-b">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleRefresh}
+          className="hover:bg-gray-100"
+          title="Refresh chat"
+        >
+          <RefreshCw className="h-4 w-4" />
+        </Button>
+      </div>
+
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {messages.map((message, index) => (
