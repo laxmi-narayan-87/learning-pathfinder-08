@@ -21,6 +21,23 @@ const RoadmapView = () => {
     enabled: !!id
   });
 
+  const getRoadmapImage = (id: string) => {
+    switch (id.toLowerCase()) {
+      case "frontend":
+        return "https://images.unsplash.com/photo-1461749280684-dccba630e2f6";
+      case "backend":
+        return "https://images.unsplash.com/photo-1498050108023-c5249f4df085";
+      case "fullstack":
+        return "https://images.unsplash.com/photo-1519389950473-47ba0277781c";
+      case "devops":
+        return "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7";
+      case "mobile":
+        return "https://images.unsplash.com/photo-1483058712412-4245e9b90334";
+      default:
+        return "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b";
+    }
+  };
+
   const handleRegenerateRoadmap = async () => {
     if (!roadmap) return;
 
@@ -253,6 +270,22 @@ const RoadmapView = () => {
         description={roadmap.description}
         onRegenerate={handleRegenerateRoadmap}
       />
+      
+      <div className="container mx-auto py-8">
+        <div className="relative h-[300px] md:h-[400px] rounded-xl overflow-hidden mb-8 shadow-lg">
+          <img
+            src={getRoadmapImage(id || "")}
+            alt={`${roadmap.title} roadmap`}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent">
+            <div className="absolute bottom-6 left-6 right-6">
+              <h2 className="text-3xl font-bold text-white mb-2">{roadmap.title}</h2>
+              <p className="text-gray-200">{roadmap.description}</p>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <RoadmapProgress
         completedTopics={progress.completedTopics}
