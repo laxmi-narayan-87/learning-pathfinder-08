@@ -10,6 +10,7 @@ import RoadmapHeader from "@/components/roadmap/RoadmapHeader";
 import RoadmapProgress from "@/components/roadmap/RoadmapProgress";
 import RoadmapContent from "@/components/roadmap/RoadmapContent";
 import RoadmapHero from "@/components/roadmap/RoadmapHero";
+import { Flowchart } from "@/components/Flowchart";
 
 const RoadmapView = () => {
   const { id } = useParams();
@@ -109,6 +110,13 @@ const RoadmapView = () => {
         completedTopics={progress.completedTopics}
         totalTopics={totalTopics}
       />
+
+      <div className="container mx-auto py-8">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">Learning Path</h2>
+          <Flowchart sections={roadmap.sections} />
+        </div>
+      </div>
       
       <RoadmapContent
         resources={roadmap.resources}
