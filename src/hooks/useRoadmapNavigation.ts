@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import { useToast } from "@/components/ui/use-toast";
 
 export const useRoadmapNavigation = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const navigateToRoadmap = (careerGoal: string) => {
     // Convert career goal to a valid roadmap path
@@ -27,6 +29,12 @@ export const useRoadmapNavigation = () => {
     // Use mapped path or fallback to frontend
     const finalPath = roadmapMapping[roadmapPath] || 'frontend';
     
+    // Show success toast
+    toast({
+      title: "Roadmap Generated!",
+      description: "Your personalized learning path has been generated.",
+    });
+
     // Navigate to the roadmap view with the determined path
     navigate(`/roadmap/${finalPath}`);
   };
